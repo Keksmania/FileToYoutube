@@ -221,7 +221,7 @@ namespace FileToYoutube
             this.fpsNumber.Size = new System.Drawing.Size(120, 20);
             this.fpsNumber.TabIndex = 7;
             this.fpsNumber.Value = new decimal(new int[] {
-            3,
+            6,
             0,
             0,
             0});
@@ -274,7 +274,7 @@ namespace FileToYoutube
             this.videoWidthNumber.Size = new System.Drawing.Size(120, 20);
             this.videoWidthNumber.TabIndex = 3;
             this.videoWidthNumber.Value = new decimal(new int[] {
-            1280,
+            720,
             0,
             0,
             0});
