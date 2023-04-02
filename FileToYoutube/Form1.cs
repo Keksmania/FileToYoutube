@@ -119,6 +119,7 @@ namespace FileToYoutube
                 return;
             }
 
+       
 
             infoLabel.Text = "splitting Files...";
 
@@ -126,7 +127,21 @@ namespace FileToYoutube
 
 
 
-            int volumeSize = (int)volumeSizeNumber.Value;
+            int volumeSize = 0; // (int)volumeSizeNumber.Value;
+
+            var file = File.OpenRead(filePath);
+            var fileSize = file.Length;
+            file.Close();
+
+            volumeSize = (int)(fileSize / Environment.ProcessorCount / 1024);
+
+            if(volumeSize < 500)
+            {
+                volumeSize = 500;
+            } else if(volumeSize > 200000)
+            {
+                volumeSize = 200000;
+            }
 
             // The name of the 7-Zip executable
             string sevenZipPath = @"C:\Program Files\7-Zip\7z.exe"; // das muss mit im Programm included sein
@@ -164,13 +179,29 @@ namespace FileToYoutube
             List<Thread> threads = new List<Thread>();
             for (int i = 0; i < files.Length; i++)
             {
-                int index = i;
+                if(i % Environment.ProcessorCount == 0)
+                {
+                    foreach(Thread tr in threads)
+                    {
+                        tr.Join();
+                    }
+                    threads.Clear();
 
-                Thread t = new Thread(() => TurnFileToImages(File.ReadAllText(files[index], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath));
-                t.Start();
-                threads.Add(t);
-            
-             }
+                    int index = i;
+                    Thread t = new Thread(() => TurnFileToImages(File.ReadAllText(files[index], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath));
+                    t.Start();
+                    threads.Add(t);
+
+                } else
+                {
+                    int index = i;
+
+                    Thread t = new Thread(() => TurnFileToImages(File.ReadAllText(files[index], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath));
+                    t.Start();
+                    threads.Add(t);
+                }
+
+            }
             for (int i = 0; i < files.Length; i++)
             {
                 threads[i].Join();

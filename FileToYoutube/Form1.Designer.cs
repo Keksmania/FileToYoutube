@@ -32,9 +32,6 @@ namespace FileToYoutube
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.startButton = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.label3 = new System.Windows.Forms.Label();
-            this.volumeSizeNumber = new System.Windows.Forms.NumericUpDown();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.Select1 = new System.Windows.Forms.Button();
@@ -62,8 +59,6 @@ namespace FileToYoutube
             this.button4 = new System.Windows.Forms.Button();
             this.progressBar2 = new System.Windows.Forms.ProgressBar();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            ((System.ComponentModel.ISupportInitialize)(this.volumeSizeNumber)).BeginInit();
-            this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -93,43 +88,6 @@ namespace FileToYoutube
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(343, 23);
             this.progressBar1.TabIndex = 2;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 25);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(81, 13);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Volume Size kB";
-            // 
-            // volumeSizeNumber
-            // 
-            this.volumeSizeNumber.Location = new System.Drawing.Point(15, 41);
-            this.volumeSizeNumber.Maximum = new decimal(new int[] {
-            350000,
-            0,
-            0,
-            0});
-            this.volumeSizeNumber.Name = "volumeSizeNumber";
-            this.volumeSizeNumber.Size = new System.Drawing.Size(120, 20);
-            this.volumeSizeNumber.TabIndex = 7;
-            this.volumeSizeNumber.Value = new decimal(new int[] {
-            4000,
-            0,
-            0,
-            0});
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.volumeSizeNumber);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Location = new System.Drawing.Point(12, 131);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(343, 100);
-            this.groupBox1.TabIndex = 12;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Step 3: zip volume options";
             // 
             // groupBox2
             // 
@@ -197,12 +155,12 @@ namespace FileToYoutube
             this.groupBox5.Controls.Add(this.videoWidthNumber);
             this.groupBox5.Controls.Add(this.label4);
             this.groupBox5.Controls.Add(this.label5);
-            this.groupBox5.Location = new System.Drawing.Point(12, 237);
+            this.groupBox5.Location = new System.Drawing.Point(12, 131);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(343, 100);
             this.groupBox5.TabIndex = 16;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Step 5: video options";
+            this.groupBox5.Text = "Step 3: video options";
             // 
             // fpsNumber
             // 
@@ -305,7 +263,7 @@ namespace FileToYoutube
             this.groupBox6.Size = new System.Drawing.Size(343, 100);
             this.groupBox6.TabIndex = 17;
             this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Step 6: start processing";
+            this.groupBox6.Text = "Step 4: start processing";
             // 
             // infoLabel
             // 
@@ -448,16 +406,12 @@ namespace FileToYoutube
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.progressBar1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Padding = new System.Windows.Forms.Padding(500);
             this.Text = "FileToVideoEncoder";
-            ((System.ComponentModel.ISupportInitialize)(this.volumeSizeNumber)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -482,9 +436,6 @@ namespace FileToYoutube
 
         private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.NumericUpDown volumeSizeNumber;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button Select1;
