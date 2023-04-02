@@ -138,9 +138,9 @@ namespace FileToYoutube
             if(volumeSize < 500)
             {
                 volumeSize = 500;
-            } else if(volumeSize > 200000)
+            } else if(volumeSize > 50000)
             {
-                volumeSize = 200000;
+                volumeSize = 50000; // 12 core cpu would mean 12*50 MB so 600 MB ram at least to put the images back into files
             }
 
             // The name of the 7-Zip executable
@@ -185,6 +185,8 @@ namespace FileToYoutube
                     {
                         tr.Join();
                     }
+                    progressBar1.Value += (35 / files.Length)*Environment.ProcessorCount;
+                    progressBar1.Refresh();
                     threads.Clear();
 
                     int index = i;
@@ -202,9 +204,9 @@ namespace FileToYoutube
                 }
 
             }
-            for (int i = 0; i < files.Length; i++)
+            foreach (Thread t in threads)
             {
-                threads[i].Join();
+                t.Join();
             }
             
 
@@ -478,12 +480,12 @@ namespace FileToYoutube
                 //bitmap = ResizeImage(bitmap, 64, 64);
 
 
-                for (int y = 0; y < imageHeight && endOfFile; y++)
-                {
-                    for (int x = 0; x < imageWidth && endOfFile; x++)
+            //    for (int y = 0; y < imageHeight && endOfFile; y++)
+             //   {
+                    for (int x = 0; x < imageWidth && endOfFile; x++) // it's almost impossible that one straight line at the middle is white. To speed up the decode every image is only checked if it is white in the middle
                     {
 
-                        currentColor = bitmap.GetPixel(x, y);
+                        currentColor = bitmap.GetPixel(x, 92); // 185 / 2 = 92.5
 
 
                         if ( 200 > ((currentColor.R+ currentColor.G + currentColor.B) / 3))
@@ -494,7 +496,7 @@ namespace FileToYoutube
                         }
                     }
 
-                }
+              //  }
 
                
 
