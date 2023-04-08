@@ -27,7 +27,83 @@ namespace FileToYoutube
 
         static Dictionary<int, int> myNames = new Dictionary<int, int>();
 
-        public static void TurnFileToImages(string binaryFile, int imageWidth, int imageHeight, int threadIndex, string bilderPath)
+        private void TurnVideoToFile(string[] chunk, int threadIndex, string bilderPath, string workPath)
+        {
+
+            bool endOfFile = false;
+
+            Color currentColor = new Color();
+
+            StringBuilder sb1 = new StringBuilder();
+
+
+            int imageIndex = -1;
+
+            Bitmap bitmap;
+            QRDecoder Decoder = new QRDecoder();
+            byte[][] ResultArray;
+
+
+            for (int i = 0; i < chunk.Length; i++)
+            {
+                imageIndex++;
+
+                endOfFile = true;
+                bitmap = new Bitmap(chunk[i]);
+
+
+
+                for (int x = 0; x < imageWidth && endOfFile; x++) // it's almost impossible that one straight line at the middle is white. To speed up the decode every image is only checked if it is white in the middle
+                {
+
+                    currentColor = bitmap.GetPixel(x, 92); // 185 / 2 = 92.5
+
+
+                    if (200 > ((currentColor.R + currentColor.G + currentColor.B) / 3))
+                    {
+
+                        endOfFile = false;
+                        break;
+                    }
+                }
+
+
+
+                if (endOfFile)
+                {
+
+                    if (sb1.Length > 0)
+                    {
+
+                        File.WriteAllText(Path.Combine(newFolderPathDecode, "myZip.zip." + getName(threadIndex, 3)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
+                        sb1.Clear();
+                     
+                    }
+                }
+                else
+                {
+                    Decoder = new QRDecoder();
+                    ResultArray = Decoder.ImageDecoder(bitmap);
+
+                    if (ResultArray == null)
+                    {
+                        continue;
+                    }
+                    foreach (char c in ResultArray[0])
+                    {
+
+                        sb1.Append(c);
+                    }
+                    ResultArray = null;
+                    bitmap.Dispose();
+                    Decoder = null;
+
+                }
+
+            }
+        }
+
+        static void TurnFileToImages(string binaryFile, int imageWidth, int imageHeight, int threadIndex, string bilderPath)
         {
 
             
@@ -35,9 +111,6 @@ namespace FileToYoutube
 
               int width = imageWidth;
               int height = imageHeight;
-            //  int imageCount = (int)Math.Ceiling((double)binaryFile.Length * 8 * 1.3) ; // 3 because of 2 extra bytes for each byte
-            //  imageCount = 1;
-
 
             int nameIndex = 0;
             int jumpWidth = 1273;
@@ -82,7 +155,7 @@ namespace FileToYoutube
                 gfx.FillRectangle(brush, 0, 0, width, height);
             }
 
-            // ResizeImage(bitmap2, (int)videoWidthNumber.Value, (int)videoHeightNumber.Value).Save(Path.Combine(bilderPath, getName(nameIndex, 20) + ".png"), ImageFormat.Png);
+
             bitmap2.Save(Path.Combine(bilderPath, getName(threadIndex, 3) + getName(nameIndex, 20) + ".png"), ImageFormat.Png);
             nameIndex++;
 
@@ -108,15 +181,14 @@ namespace FileToYoutube
 
           const int imageWidth = 185;
           const int imageHeight = 185;
-      //    const int imageWidth = 1280;
-        //  const int imageHeight = 720;
+
         const int bitWidth = 1;
         string filePath = "", newFolderPath = "", bilderPath = "", filePathDecode = "", newFolderPathDecode = "", bilderPathDecode = "";
         const string ffmpegPath = @"C:\Users\Alper\Desktop\ffmpeg-5.1.2-full_build\bin\ffmpeg.exe"; // das muss mit im Programm included sein
 
         private void button1_Click(object sender, EventArgs e)
         {
-            int bitIndex = 0;
+
       
 
             if (!Directory.Exists(newFolderPath) || !Directory.Exists(bilderPath) || !File.Exists(filePath))
@@ -178,9 +250,6 @@ namespace FileToYoutube
 
             infoLabel.Text = "turning volumes into images...";
 
-            int nameIndex = 0;
-            string mystring = "";
-
 
             List<Thread> threads = new List<Thread>();
             for (int i = 0; i < files.Length; i++)
@@ -203,22 +272,19 @@ namespace FileToYoutube
 
 
             StringBuilder myStringBuilder = new StringBuilder();
-           // string mystring = "";
-            //string[] filesBilder = Directory.GetFiles(bilderPath);
-            //for (int i = 0; i < filesBilder.Length; i++)
-            //{
+
 
             for (int i = 0; i < myNames.Count; i++)
             {
                 for (int ii = 0; ii < myNames[i]; ii++)
                 {
                     myStringBuilder.Append("file '" + getName(i, 3) + getName(ii, 20) + ".png" + "'\n");
-                    // mystring += "file '" + getName(i, 3) + getName(ii, 20) + ".png" + "'\n";
+
                 }
               
             }
                
-            //}
+
 
              File.WriteAllText(Path.Combine(bilderPath,"WriteLines.txt"), myStringBuilder.ToString());
 
@@ -230,22 +296,13 @@ namespace FileToYoutube
 
 
 
-            // C:\Users\Alper\Desktop\ffmpeg-5.1.2-full_build\bin\ffmpeg -r 1 -f concat -i WriteLines.txt -c:v  libx264rgb -shortest -s 480x480 -sws_flags neighbor  black.mp4
-            // The command to run 7-Zip
-            // libx265 -pix_fmt + -vf scale=1920:1080 -colorspace bt709
-            //string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -i \"{Path.Combine(bilderPath, "WriteLines.txt")}\" -c:v  libx265  -x265-params lossless=1  -colorspace bt709 -s {(int)videoWidthNumber.Value}x{(int)videoHeightNumber.Value} -sws_flags neighbor \"{Path.Combine(newFolderPath, "black.mp4")}\"";
-
-            //  string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -i \"{Path.Combine(bilderPath, "WriteLines.txt")}\" -c:v  libx265  -x265-params lossless=1  -colorspace bt709  \"{Path.Combine(newFolderPath, "black.mp4")}\"";
-            //   string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0 -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v libx265 -b:v 1880k -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor  {Path.Combine(newFolderPath, "black.mp4")}";
+           
            // string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v  libx264rgb -preset faster -crf 0 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor  {Path.Combine(newFolderPath, "black.mp4")}";
            // string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v  libx264rgb -preset faster -crf 0 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor {Path.Combine(newFolderPath, "black.mp4")}";
             string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v libx264 -preset faster -movflags faststart -vf format=yuv420p -bf 2 -crf 30 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -map 0 -segment_time 06:00:00 -f segment -reset_timestamps 1 -ignore_editlist 1 {Path.Combine(newFolderPath, "output%03d.mp4")}";
 
 
-            ///  string ffmpegCommand = $"-hwaccel cuda -r {(int)fpsNumber.Value} -f concat -safe 0 -i {Path.Combine(bilderPath, "WriteLines.txt")} -vcodec h264_nvenc -preset lossless -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor  {Path.Combine(newFolderPath, "black.mp4")}";
 
-            // -preset lossless 
-            // Start 7-Zip
             Process process2 = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -265,148 +322,7 @@ namespace FileToYoutube
             return;
             
             
-                        List<byte> recoveredBinaryFile = new List<byte>();
-                        string[] imageFiles =Directory.GetFiles(bilderPath, "*.png");                 
-                        Array.Sort(imageFiles);
-
-                        int fileCounter = 1;
-                        bool endOfFile = false;
-                        bitIndex = 0;
-
-                        Color currentColor = new Color();
-                        Color lastColor = new Color();
-
-                        string currentChar = "";
-                         StringBuilder sb1 = new StringBuilder();
-                       //  string superString = "";
-                     //  List<ushort> charList = new List<ushort>();
-                        StringBuilder sb = new StringBuilder();
-                         int komischerCounter = 0;
-                        
-                        foreach (string imageFile in imageFiles)
-                        {
-                            endOfFile = true;
-                            Bitmap bitmap = new Bitmap(imageFile);
-                            lastColor = bitmap.GetPixel(0, 0);
-                            for (int y = 0; y < imageHeight && endOfFile; y++)
-                            {
-                                for (int x = 0; x < imageWidth && endOfFile; x++)
-                                {
-                             
-                                   currentColor = bitmap.GetPixel(x, y);
- 
-
-
-                                if (lastColor != currentColor)
-                                            {
-
-                                                endOfFile = false;
-                                                break;
-                                            }
-                                            lastColor = currentColor;
-                                        }
-
-                                    }
-
-                            if (endOfFile)
-                            {
-
-                                if (sb1.Length > 0) {
-                                    int removeBytes = sb1.Length;
-
-                                    while (sb1[removeBytes - 1] == 'ÿ')
-                                    {
-                                        removeBytes -= 1;
-
-                                    }
-                                   // removeBytes -= bitWidth % 4;
-                                    if(currentColor.R < 10)
-                                    {
-                                        removeBytes -= 1;
-                                    } else if (currentColor.R < 200) {
-                                        removeBytes -= 2;
-                                       }
-
-                                    sb1.Remove(removeBytes-1, sb1.Length - removeBytes + 1);
- //                                       File.WriteAllBytes(Path.Combine(newFolderPath, "myZip.zip.00" + fileCounter), recoveredBinaryFile.ToArray());
-                                     File.WriteAllText(Path.Combine(newFolderPath, "myZip.zip.00" + fileCounter), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
-                                     sb1.Clear();
-                        recoveredBinaryFile.Clear();
-                                    fileCounter++;
-                                }
-                            }
-                            else
-                            {
-                                for (int y = 0; y < imageHeight; y++)
-                                {
-                                    for (int x = 0; x < imageWidth; x++)
-                                    {
-                                        currentColor = bitmap.GetPixel(x, y);
-
-                                    int i;
-                                         for ( i = 0; i < 1*3; i++)
-                                        {
-      
-                                            if(i < 1) {
-                                                  currentChar += Convert.ToString(currentColor.R, 2).PadLeft(8, '0')[i];
-                                   
-                                                    
-                                }
-                                            else if (i < 1*2) {
-                                                 currentChar += Convert.ToString(currentColor.G, 2).PadLeft(8, '0')[i- 1];
-                                }
-                                            else
-                                            {
-                                                currentChar += Convert.ToString(currentColor.B, 2).PadLeft(8, '0')[i- 1*2];
-                                }
-
-                                if (currentChar.Length >= 8)
-                                {
-
-
-
-                                    // Console.WriteLine(currentChar);
-                                    // Console.WriteLine(a);
-                                    // Console.WriteLine(BitConverter.GetBytes(a));
-                                    //  recoveredBinaryFile.Add(BitConverter.GetBytes((ushort)Convert.ToInt16(currentChar, 2))[0]);
-                                    // recoveredBinaryFile.Add(BitConverter.GetBytes((ushort)Convert.ToInt16(currentChar, 2))[1]);
-
-                                    //     Console.WriteLine(Encoding.GetEncoding("Macintosh").GetString(BitConverter.GetBytes((ushort)Convert.ToInt16(currentChar, 2))));
-
-
-
-                                   // recoveredBinaryFile.Add(Convert.ToByte(currentChar, 2));
-                                     sb1.Append((char)Convert.ToInt16(currentChar, 2));
-
-
-                                                currentChar = "";
-                                }
-                                        }
-
-
-                                    }
-                                }
-                                if (currentChar.Length > 0 )
-                                {
-
-
-
-                                    //    recoveredBinaryFile.Add(Convert.ToByte(currentChar, 2));
-                        sb1.Append((char)Convert.ToInt16(currentChar, 2));
-
-                        currentChar = "";
-                    }
-                            }
-
-
-                        }
-
-                        return;
-                        
-
-
-            // Console.WriteLine(outputArray.Length.ToString());
-
+                 
         }
 
         static YoutubeClient youtube = new YoutubeClient();
@@ -424,23 +340,6 @@ namespace FileToYoutube
 
         }
 
-        private async void button2_Click(object sender, EventArgs e)
-        {
-           
-            this.button2.Text = File.Exists(Path.Combine("F:/Testx/Work/Images", "filename" + getName(1, 11) + ".png")).ToString();
-            return;
-            var youtube = new YoutubeClient();
-
-            var videoUrl = "https://youtu.be/wnC7NA-NXDE";
-            var streamManifest = await youtube.Videos.Streams.GetManifestAsync(videoUrl);
-            // ...or highest quality MP4 video-only stream
-            var streamInfo = streamManifest
-             .GetVideoOnlyStreams()
-             .GetWithHighestVideoQuality();
-            var stream = await youtube.Videos.Streams.GetAsync(streamInfo);
-            await youtube.Videos.Streams.DownloadAsync(streamInfo, Path.Combine(newFolderPath, $"video.{streamInfo.Container}"));
-
-        }
 
         private void youtubeButton_Click(object sender, EventArgs e)
         {
@@ -463,24 +362,14 @@ namespace FileToYoutube
         }
 
 
-
         private void button4_Click(object sender, EventArgs e)
         {
 
             bool youtubeDownloadBool = youtubeList.Items.Count > 0;
 
-
-
-           // if (bilderPathDecode == "" || (filePathDecode == "" && youtubeList.Items.Count < 1) || newFolderPathDecode == "")
-           // {
-           //     return;
-           // }
-
             progressBar2.Value = 10;
             progressBar2.Refresh();
 
-            // C:\Users\Alper\Desktop\ffmpeg-5.1.2-full_build\bin\ffmpeg.exe -i black.webm -r 1/1 $filename%03d.png
-            // string ffmpegCommand = $"-i {filePathDecode} -r {fpsNumber.Value} -s {imageWidth}x{imageHeight} -sws_flags neighbor -pix_fmt rgb24  { Path.Combine(bilderPathDecode , "filename%10d.png")}";
             string ffmpegCommand = "";
             if (youtubeDownloadBool)
             {
@@ -518,9 +407,6 @@ namespace FileToYoutube
                 return;
             }
             
-            //  string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v  libx264rgb -preset faster -crf 10 -s {(int)videoWidthNumber.Value}x{(int)videoHeightNumber.Value} -sws_flags neighbor  {Path.Combine(newFolderPath,"black.mp4")}";
-
-            // Start 7-Zip
 
 
 
@@ -528,98 +414,45 @@ namespace FileToYoutube
             progressBar2.Value = 50;
             progressBar2.Refresh();
           
-            // return;
-        //    List<byte> recoveredBinaryFile = new List<byte>();
+
 
              string[] imageFiles = Directory.GetFiles(bilderPathDecode, "*.png", SearchOption.TopDirectoryOnly);
+            List<string[]> imageChunks = new List<string[]>();
 
-            //  Array.Sort(imageFiles);
+            int loopIndex = 0;
+            int lastStart = 0;
+            foreach( string image in imageFiles)
+            {   
+                FileInfo fi = new FileInfo(image);
+                if (fi.Length < 4096)
+                {
+                    string[] chunk = new string[loopIndex - lastStart + 1 ];
+                    Array.Copy(imageFiles, lastStart, chunk, 0,loopIndex - lastStart + 1);
+                    imageChunks.Add(chunk);
+                    lastStart = loopIndex+1;
 
-            if (imageFiles.Length < 1)
-            {
-                return;
+
+                }
+                
+                loopIndex++;
             }
 
-            int fileCounter = 1;
-            bool endOfFile = false;
 
-            Color currentColor = new Color();
-
-            StringBuilder sb1 = new StringBuilder();
-
-
-            int imageIndex = -1;
-
-            int progress = (100 - progressBar2.Value) / imageFiles.Length;
-
-            Bitmap bitmap;
-            QRDecoder Decoder = new QRDecoder();
-            byte[][] ResultArray;
-
-
-            for (int i = 0; i < imageFiles.Length; i++)
+            List<Task> waitTasks = new List<Task>();
+            for(int i = 0; i < imageChunks.Count; i++)
             {
-                imageIndex++;
+                int index = i;
+                  var t = Task<int>.Run(() => TurnVideoToFile(imageChunks[index], index, bilderPathDecode, newFolderPathDecode));
 
-
-                // progressBar2.Value += progress;
-                endOfFile = true;
-                bitmap = new Bitmap(imageFiles[i]);
-
-
-
-                for (int x = 0; x < imageWidth && endOfFile; x++) // it's almost impossible that one straight line at the middle is white. To speed up the decode every image is only checked if it is white in the middle
-                {
-
-                    currentColor = bitmap.GetPixel(x, 92); // 185 / 2 = 92.5
-
-
-                    if ( 200 > ((currentColor.R+ currentColor.G + currentColor.B) / 3))
-                    {
-
-                        endOfFile = false;
-                        break;
-                    }
-                }
-
-
-
-                if (endOfFile)
-                {
-
-                        if (sb1.Length > 0)
-                      {
-
-                          File.WriteAllText(Path.Combine(newFolderPathDecode, "myZip.zip." + getName(fileCounter, 3)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
-                       sb1.Clear();
-                       // recoveredBinaryFile.Clear();
-                        fileCounter++;
-                      //  File.OpenWrite(Path.Combine(newFolderPathDecode, "myZip.zip." + getName(fileCounter, 3)));
-                      }
-                }
-                else
-                {
-                    Decoder = new QRDecoder();
-                    ResultArray = Decoder.ImageDecoder(bitmap);
-
-                    if (ResultArray == null)
-                    {
-                        continue;
-                    }
-                    foreach (char c in ResultArray[0])
-                    {
-                        //  myFile.Write(ResultArray[0],0, ResultArray[0].Length);
-
-
-                        sb1.Append(c);
-                    }
-                        ResultArray = null;
-                         bitmap.Dispose();
-                        Decoder = null;
-
-                }
-               // bitmap.Dispose();
             }
+            foreach(Task t in waitTasks)
+            {
+                t.Wait();
+            }
+
+
+
+
             progressBar2.Value = 100;
         }
 
@@ -637,8 +470,6 @@ namespace FileToYoutube
                 Console.WriteLine("Selected file: " + filePathDecode);
             }
 
-            textBox3.Text = filePathDecode;
-            textBox3.Refresh();
         }
 
         private void Select1_Click(object sender, EventArgs e)

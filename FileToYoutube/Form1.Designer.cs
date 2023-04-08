@@ -55,7 +55,6 @@ namespace FileToYoutube
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.button4 = new System.Windows.Forms.Button();
             this.progressBar2 = new System.Windows.Forms.ProgressBar();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.youtubeGroup = new System.Windows.Forms.GroupBox();
             this.youtubeText = new System.Windows.Forms.TextBox();
             this.youtubeList = new System.Windows.Forms.ListBox();
@@ -350,16 +349,6 @@ namespace FileToYoutube
             this.progressBar2.Size = new System.Drawing.Size(343, 23);
             this.progressBar2.TabIndex = 18;
             // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(819, 3);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(46, 17);
-            this.checkBox1.TabIndex = 21;
-            this.checkBox1.Text = "Dev";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
             // youtubeGroup
             // 
             this.youtubeGroup.Controls.Add(this.youtubeButton);
@@ -404,7 +393,6 @@ namespace FileToYoutube
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(878, 704);
             this.Controls.Add(this.youtubeGroup);
-            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.groupBox9);
             this.Controls.Add(this.progressBar2);
             this.Controls.Add(this.label8);
@@ -468,7 +456,6 @@ namespace FileToYoutube
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.ProgressBar progressBar2;
-        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.GroupBox youtubeGroup;
         private System.Windows.Forms.Button youtubeButton;
         private System.Windows.Forms.ListBox youtubeList;
