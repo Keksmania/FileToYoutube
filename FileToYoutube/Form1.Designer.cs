@@ -47,9 +47,6 @@ namespace FileToYoutube
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.infoLabel = new System.Windows.Forms.Label();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
@@ -59,6 +56,10 @@ namespace FileToYoutube
             this.button4 = new System.Windows.Forms.Button();
             this.progressBar2 = new System.Windows.Forms.ProgressBar();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.youtubeGroup = new System.Windows.Forms.GroupBox();
+            this.youtubeText = new System.Windows.Forms.TextBox();
+            this.youtubeList = new System.Windows.Forms.ListBox();
+            this.youtubeButton = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -66,9 +67,9 @@ namespace FileToYoutube
             ((System.ComponentModel.ISupportInitialize)(this.videoHeightNumber)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.videoWidthNumber)).BeginInit();
             this.groupBox6.SuspendLayout();
-            this.groupBox7.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.groupBox9.SuspendLayout();
+            this.youtubeGroup.SuspendLayout();
             this.SuspendLayout();
             // 
             // startButton
@@ -274,40 +275,11 @@ namespace FileToYoutube
             this.infoLabel.Size = new System.Drawing.Size(100, 13);
             this.infoLabel.TabIndex = 18;
             // 
-            // groupBox7
-            // 
-            this.groupBox7.Controls.Add(this.textBox3);
-            this.groupBox7.Controls.Add(this.button1);
-            this.groupBox7.Location = new System.Drawing.Point(439, 23);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(343, 48);
-            this.groupBox7.TabIndex = 14;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Step 1: Select file";
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(7, 20);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.ReadOnly = true;
-            this.textBox3.Size = new System.Drawing.Size(249, 20);
-            this.textBox3.TabIndex = 1;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(262, 19);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Browse";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
-            // 
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.textBox4);
             this.groupBox8.Controls.Add(this.button3);
-            this.groupBox8.Location = new System.Drawing.Point(439, 77);
+            this.groupBox8.Location = new System.Drawing.Point(439, 288);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(343, 48);
             this.groupBox8.TabIndex = 17;
@@ -388,19 +360,56 @@ namespace FileToYoutube
             this.checkBox1.Text = "Dev";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
+            // youtubeGroup
+            // 
+            this.youtubeGroup.Controls.Add(this.youtubeButton);
+            this.youtubeGroup.Controls.Add(this.youtubeList);
+            this.youtubeGroup.Controls.Add(this.youtubeText);
+            this.youtubeGroup.Location = new System.Drawing.Point(433, 35);
+            this.youtubeGroup.Name = "youtubeGroup";
+            this.youtubeGroup.Size = new System.Drawing.Size(343, 149);
+            this.youtubeGroup.TabIndex = 23;
+            this.youtubeGroup.TabStop = false;
+            this.youtubeGroup.Text = "Step 1: Youtube links";
+            // 
+            // youtubeText
+            // 
+            this.youtubeText.Location = new System.Drawing.Point(7, 20);
+            this.youtubeText.Name = "youtubeText";
+            this.youtubeText.Size = new System.Drawing.Size(249, 20);
+            this.youtubeText.TabIndex = 0;
+            // 
+            // youtubeList
+            // 
+            this.youtubeList.FormattingEnabled = true;
+            this.youtubeList.Location = new System.Drawing.Point(7, 47);
+            this.youtubeList.Name = "youtubeList";
+            this.youtubeList.Size = new System.Drawing.Size(330, 95);
+            this.youtubeList.TabIndex = 1;
+            // 
+            // youtubeButton
+            // 
+            this.youtubeButton.Location = new System.Drawing.Point(262, 18);
+            this.youtubeButton.Name = "youtubeButton";
+            this.youtubeButton.Size = new System.Drawing.Size(75, 23);
+            this.youtubeButton.TabIndex = 2;
+            this.youtubeButton.Text = "Add";
+            this.youtubeButton.UseVisualStyleBackColor = true;
+            this.youtubeButton.Click += new System.EventHandler(this.youtubeButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(878, 704);
+            this.Controls.Add(this.youtubeGroup);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.groupBox9);
             this.Controls.Add(this.progressBar2);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.groupBox8);
-            this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.infoLabel);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
@@ -422,11 +431,11 @@ namespace FileToYoutube
             ((System.ComponentModel.ISupportInitialize)(this.videoHeightNumber)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.videoWidthNumber)).EndInit();
             this.groupBox6.ResumeLayout(false);
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
             this.groupBox9.ResumeLayout(false);
+            this.youtubeGroup.ResumeLayout(false);
+            this.youtubeGroup.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -451,9 +460,6 @@ namespace FileToYoutube
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.Label infoLabel;
-        private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.Button button3;
@@ -463,6 +469,10 @@ namespace FileToYoutube
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.ProgressBar progressBar2;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.GroupBox youtubeGroup;
+        private System.Windows.Forms.Button youtubeButton;
+        private System.Windows.Forms.ListBox youtubeList;
+        private System.Windows.Forms.TextBox youtubeText;
     }
 }
 
