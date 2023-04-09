@@ -299,7 +299,7 @@ namespace FileToYoutube
            
            // string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v  libx264rgb -preset faster -crf 0 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor  {Path.Combine(newFolderPath, "black.mp4")}";
            // string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v  libx264rgb -preset faster -crf 0 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor {Path.Combine(newFolderPath, "black.mp4")}";
-            string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v libx264 -preset faster -movflags faststart -vf format=yuv420p -bf 2 -crf 30 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -map 0 -segment_time 06:00:00 -f segment -reset_timestamps 1 -ignore_editlist 1 {Path.Combine(newFolderPath, "output%03d.mp4")}";
+            string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v libx264 -preset faster -movflags faststart -vf format=yuv420p -bf 2 -crf 25 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -map 0 -segment_time 06:00:00 -f segment -reset_timestamps 1 -ignore_editlist 1 {Path.Combine(newFolderPath, "output%03d.mp4")}";
 
 
 
@@ -361,6 +361,14 @@ namespace FileToYoutube
             youtubeList.Refresh();
         }
 
+        private void button1_Click_2(object sender, EventArgs e)
+        {
+            if (this.youtubeList.SelectedIndex > -1)
+            {
+                this.youtubeList.Items.RemoveAt(this.youtubeList.SelectedIndex);
+            }
+           
+        }
 
         private void button4_Click(object sender, EventArgs e)
         {
