@@ -56,10 +56,11 @@ namespace FileToYoutube
             this.button4 = new System.Windows.Forms.Button();
             this.progressBar2 = new System.Windows.Forms.ProgressBar();
             this.youtubeGroup = new System.Windows.Forms.GroupBox();
-            this.youtubeText = new System.Windows.Forms.TextBox();
-            this.youtubeList = new System.Windows.Forms.ListBox();
             this.youtubeButton = new System.Windows.Forms.Button();
+            this.youtubeList = new System.Windows.Forms.ListBox();
+            this.youtubeText = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -362,21 +363,6 @@ namespace FileToYoutube
             this.youtubeGroup.TabStop = false;
             this.youtubeGroup.Text = "Step 1: Youtube links in order (first: part 1, second: part 2 and so on)";
             // 
-            // youtubeText
-            // 
-            this.youtubeText.Location = new System.Drawing.Point(7, 20);
-            this.youtubeText.Name = "youtubeText";
-            this.youtubeText.Size = new System.Drawing.Size(249, 20);
-            this.youtubeText.TabIndex = 0;
-            // 
-            // youtubeList
-            // 
-            this.youtubeList.FormattingEnabled = true;
-            this.youtubeList.Location = new System.Drawing.Point(7, 47);
-            this.youtubeList.Name = "youtubeList";
-            this.youtubeList.Size = new System.Drawing.Size(330, 82);
-            this.youtubeList.TabIndex = 1;
-            // 
             // youtubeButton
             // 
             this.youtubeButton.Location = new System.Drawing.Point(262, 18);
@@ -386,6 +372,21 @@ namespace FileToYoutube
             this.youtubeButton.Text = "Add";
             this.youtubeButton.UseVisualStyleBackColor = true;
             this.youtubeButton.Click += new System.EventHandler(this.youtubeButton_Click);
+            // 
+            // youtubeList
+            // 
+            this.youtubeList.FormattingEnabled = true;
+            this.youtubeList.Location = new System.Drawing.Point(7, 47);
+            this.youtubeList.Name = "youtubeList";
+            this.youtubeList.Size = new System.Drawing.Size(330, 82);
+            this.youtubeList.TabIndex = 1;
+            // 
+            // youtubeText
+            // 
+            this.youtubeText.Location = new System.Drawing.Point(7, 20);
+            this.youtubeText.Name = "youtubeText";
+            this.youtubeText.Size = new System.Drawing.Size(249, 20);
+            this.youtubeText.TabIndex = 0;
             // 
             // button1
             // 
@@ -397,12 +398,23 @@ namespace FileToYoutube
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click_2);
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(321, 379);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 1;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(731, 402);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.youtubeGroup);
             this.Controls.Add(this.groupBox9);
@@ -473,6 +485,7 @@ namespace FileToYoutube
         private System.Windows.Forms.ListBox youtubeList;
         private System.Windows.Forms.TextBox youtubeText;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
     }
 }
 
