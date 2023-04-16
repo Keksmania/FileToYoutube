@@ -287,11 +287,18 @@ namespace FileToYoutube
              // The name of the 7-Zip executable
              string sevenZipPath = @"C:\Program Files\7-Zip\7z.exe"; // das muss mit im Programm included sein
 
-             // The command to run 7-Zip
-             string sevenZipCommand = $"a -v{volumeSize}k -tzip " + '"' + Path.Combine(newFolderPath, Path.GetFileNameWithoutExtension(filePath)) + ".zip" + "\" \"" + filePath + "\"";
+            string password = this.PasswortEncode.Text;
 
-             // Start 7-Zip
-             Process process = new Process
+            if(password.Length > 0)
+            {
+                password = " -p\"" + password + '"';
+            }
+
+             // The command to run 7-Zip
+             string sevenZipCommand = $"a -v{volumeSize}k -tzip " + '"' + Path.Combine(newFolderPath, Path.GetFileNameWithoutExtension(filePath)) + ".zip" + "\" \"" + filePath + $"\"{password}";
+
+            // Start 7-Zip
+            Process process = new Process
              {
                  StartInfo = new ProcessStartInfo
                  {
@@ -390,7 +397,6 @@ namespace FileToYoutube
 
             }
 
-            Seperator = 60; // debug
 
             TimeSpan time = TimeSpan.FromSeconds(Seperator);
 

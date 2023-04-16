@@ -61,6 +61,8 @@ namespace FileToYoutube
             this.youtubeText = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.PasswortEncode = new System.Windows.Forms.TextBox();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -71,6 +73,7 @@ namespace FileToYoutube
             this.groupBox8.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.youtubeGroup.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // startButton
@@ -86,7 +89,7 @@ namespace FileToYoutube
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 350);
+            this.progressBar1.Location = new System.Drawing.Point(12, 404);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(343, 23);
             this.progressBar1.TabIndex = 2;
@@ -260,7 +263,7 @@ namespace FileToYoutube
             // groupBox6
             // 
             this.groupBox6.Controls.Add(this.startButton);
-            this.groupBox6.Location = new System.Drawing.Point(12, 244);
+            this.groupBox6.Location = new System.Drawing.Point(12, 298);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(343, 100);
             this.groupBox6.TabIndex = 17;
@@ -326,7 +329,7 @@ namespace FileToYoutube
             // groupBox9
             // 
             this.groupBox9.Controls.Add(this.button4);
-            this.groupBox9.Location = new System.Drawing.Point(376, 244);
+            this.groupBox9.Location = new System.Drawing.Point(376, 298);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(343, 100);
             this.groupBox9.TabIndex = 19;
@@ -346,7 +349,7 @@ namespace FileToYoutube
             // 
             // progressBar2
             // 
-            this.progressBar2.Location = new System.Drawing.Point(376, 350);
+            this.progressBar2.Location = new System.Drawing.Point(376, 404);
             this.progressBar2.Name = "progressBar2";
             this.progressBar2.Size = new System.Drawing.Size(343, 23);
             this.progressBar2.TabIndex = 18;
@@ -400,7 +403,7 @@ namespace FileToYoutube
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(321, 379);
+            this.button2.Location = new System.Drawing.Point(318, 437);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 1;
@@ -408,12 +411,30 @@ namespace FileToYoutube
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.PasswortEncode);
+            this.groupBox1.Location = new System.Drawing.Point(12, 244);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(343, 53);
+            this.groupBox1.TabIndex = 17;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Optional: Key";
+            // 
+            // PasswortEncode
+            // 
+            this.PasswortEncode.Location = new System.Drawing.Point(6, 20);
+            this.PasswortEncode.Name = "PasswortEncode";
+            this.PasswortEncode.Size = new System.Drawing.Size(331, 20);
+            this.PasswortEncode.TabIndex = 0;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(731, 402);
+            this.ClientSize = new System.Drawing.Size(731, 461);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.youtubeGroup);
@@ -448,6 +469,8 @@ namespace FileToYoutube
             this.groupBox9.ResumeLayout(false);
             this.youtubeGroup.ResumeLayout(false);
             this.youtubeGroup.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -486,6 +509,8 @@ namespace FileToYoutube
         private System.Windows.Forms.TextBox youtubeText;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.TextBox PasswortEncode;
     }
 }
 
