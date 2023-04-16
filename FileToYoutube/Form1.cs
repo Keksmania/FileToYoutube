@@ -23,6 +23,8 @@ namespace FileToYoutube
     public partial class Form1 : Form
     {
 
+
+
         static QRCodeGenerator qrGenerator = new QRCodeGenerator();
 
         static Dictionary<int, int> myNames = new Dictionary<int, int>();
@@ -102,8 +104,15 @@ namespace FileToYoutube
                 }
             }
             Console.WriteLine(test);
-            if(sb1.Length > 0) { 
-                File.WriteAllText(Path.Combine(workPath, "myZip.zip." + getName(threadIndex, 3)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
+            if(sb1.Length > 0) {
+
+                int buffer = 3;
+                if(threadIndex > 999)
+                {
+                    buffer = threadIndex.ToString().Length;
+                }
+
+                File.WriteAllText(Path.Combine(workPath, "myZip.zip." + getName(threadIndex, buffer)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
                 sb1.Clear();
             }
 
@@ -131,7 +140,7 @@ namespace FileToYoutube
 
             int counter = 0;
             int realNameIndex = 0;
-            int jumpWidth = 1273;
+            int jumpWidth = 2953; //1273
             int x = 0;
             int y = 0;
 
@@ -143,7 +152,7 @@ namespace FileToYoutube
                     jumpWidth = binaryFile.Length - i;
                 }
 
-                QRCodeData qrCodeData = qrGenerator.CreateQrCode(binaryFile.Substring(i, jumpWidth), QRCodeGenerator.ECCLevel.H);
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(binaryFile.Substring(i, jumpWidth), QRCodeGenerator.ECCLevel.L);
                 QRCode qrCode = new QRCode(qrCodeData);
                 qrCodeImage = qrCode.GetGraphic(1);
                 if (qrCodeImage.Width != 185)
@@ -244,134 +253,145 @@ namespace FileToYoutube
         private void button1_Click(object sender, EventArgs e)
         {
 
-
-
             if (!Directory.Exists(newFolderPath) || !Directory.Exists(bilderPath) || !File.Exists(filePath))
-            {
-                infoLabel.Text = "Make sure that the folder and file are selected";
-                return;
-            }
+             {
+                 infoLabel.Text = "Make sure that the folder and file are selected";
+                 return;
+             }
 
 
 
-            infoLabel.Text = "splitting Files...";
+             infoLabel.Text = "splitting Files...";
 
-            // Start a thread that calls a parameterized instance method.
-
-
-
-            int volumeSize = 0; // (int)volumeSizeNumber.Value;
-
-            var file = File.OpenRead(filePath);
-            var fileSize = file.Length;
-            file.Close();
-
-            volumeSize = (int)(fileSize / (Environment.ProcessorCount + 1) / 1024);
-
-            if (volumeSize < 500)
-            {
-                volumeSize = 500;
-            }
-            else if (volumeSize > 50000)
-            {
-                volumeSize = 50000; // 12 core cpu would mean 12*50 MB so 600*3 = 1200 MB ram at least to put the images back into files
-            }
-
-            // The name of the 7-Zip executable
-            string sevenZipPath = @"C:\Program Files\7-Zip\7z.exe"; // das muss mit im Programm included sein
-
-            // The command to run 7-Zip
-            string sevenZipCommand = $"a -v{volumeSize}k -tzip " + '"' + Path.Combine(newFolderPath, Path.GetFileNameWithoutExtension(filePath)) + ".zip" + "\" \"" + filePath + "\"";
-
-            // Start 7-Zip
-            Process process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = sevenZipPath,
-                    Arguments = sevenZipCommand,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                }
-            };
-            process.Start();
-            process.WaitForExit();
-
-            Console.WriteLine("File split complete.");
-            progressBar1.Value = 10;
-            progressBar1.Refresh();
-
-            string[] files = Directory.GetFiles(newFolderPath);
-
-            infoLabel.Text = "turning volumes into images...";
-
-
-            List<Thread> threads = new List<Thread>();
-            for (int i = 0; i < files.Length; i++)
-            {
-
-                int index = i;
-
-                Thread t = new Thread(() => TurnFileToImages(File.ReadAllText(files[index], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath));
-                t.Start();
-                threads.Add(t);
-                // }
-
-            }
-            foreach (Thread t in threads)
-            {
-                t.Join();
-            }
+             // Start a thread that calls a parameterized instance method.
 
 
 
+             int volumeSize = 0; // (int)volumeSizeNumber.Value;
 
-            StringBuilder myStringBuilder = new StringBuilder();
+             var file = File.OpenRead(filePath);
+             var fileSize = file.Length;
+             file.Close();
 
+             volumeSize = (int)(fileSize / ((Environment.ProcessorCount)*16) / 1024);
 
-            int totalFrameCount = 0;
+             if (volumeSize < 100 ) 
+             {
+                 volumeSize = 100;
+             }
+             else if (volumeSize > 50000)
+             {
+                 volumeSize = 50000; // 12 core cpu would mean 12*50 MB so 600*3 = 1200 MB ram at least to put the images back into files, 3x because of bad code :)
+             }
 
-            for (int i = 0; i < myNames.Count; i++)
-            {
-                for (int ii = 0; ii < myNames[i]; ii++)
-                {
-                    totalFrameCount += 100;
-                    myStringBuilder.Append("file '" + getName(i, 3) + getName(ii, 20) + ".png" + "'\n");
+             // The name of the 7-Zip executable
+             string sevenZipPath = @"C:\Program Files\7-Zip\7z.exe"; // das muss mit im Programm included sein
 
-                }
+             // The command to run 7-Zip
+             string sevenZipCommand = $"a -v{volumeSize}k -tzip " + '"' + Path.Combine(newFolderPath, Path.GetFileNameWithoutExtension(filePath)) + ".zip" + "\" \"" + filePath + "\"";
 
-            }
+             // Start 7-Zip
+             Process process = new Process
+             {
+                 StartInfo = new ProcessStartInfo
+                 {
+                     FileName = sevenZipPath,
+                     Arguments = sevenZipCommand,
+                     RedirectStandardOutput = true,
+                     UseShellExecute = false,
+                     CreateNoWindow = true
+                 }
+             };
+             process.Start();
+             process.WaitForExit();
 
-            int ExtraFrames = 0;
+             Console.WriteLine("File split complete.");
+             progressBar1.Value = 10;
+             progressBar1.Refresh();
 
+             string[] files = Directory.GetFiles(newFolderPath);
 
-            if ((totalFrameCount) % (int)fpsNumber.Value > 0)
-            {
-                ExtraFrames = (int)fpsNumber.Value - (totalFrameCount) % (int)fpsNumber.Value;
-            }
+             infoLabel.Text = "turning volumes into images...";
+           
 
-            for(int i = 0; i < ExtraFrames; i++)
-            {
+            int lastI = 0;
+             List<Thread> threads = new List<Thread>();
+             for (int i = 0; i < files.Length; i++)
+             {
 
-                using (Bitmap tempBitmap = new Bitmap(imageWidth*10,imageHeight * 10)) {
-                    using (Graphics gfx = Graphics.FromImage(tempBitmap))
-                    using (SolidBrush brush = new SolidBrush(Color.Black))
+                 int index = i;
+
+                 Thread t = new Thread(() => TurnFileToImages(File.ReadAllText(files[index], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath));
+                 t.Start();
+                 threads.Add(t);
+
+                if((i % (Environment.ProcessorCount+1) == 0)){     // if threads =
+                    for (int ii = lastI+1; ii < i+1;ii++)
                     {
-                        gfx.FillRectangle(brush, 0, 0, tempBitmap.Width, tempBitmap.Height);
+                        threads[ii].Join();
                     }
-                    tempBitmap.Save(Path.Combine(bilderPath, $"ExtraFrame{i}.png"));
+
+                        lastI = i;
                 }
-                myStringBuilder.Append("file '" + $"ExtraFrame{i}.png" + "'\n");
-            }
+                 // }
+
+             }
+             foreach (Thread t in threads)
+             {
+                 t.Join();
+             }
 
 
-            int Seperator = 60 * 60 * 60;  // 6 hours
+           StringBuilder myStringBuilder = new StringBuilder();
+
+
+             int totalFrameCount = 0;
+
+             for (int i = 0; i < myNames.Count; i++)
+             {
+                 for (int ii = 0; ii < myNames[i]; ii++)
+                 {
+                     totalFrameCount += 100;
+                     myStringBuilder.Append("file '" + getName(i, 3) + getName(ii, 20) + ".png" + "'\n");
+
+                 }
+
+             }
+
+
+
+           /*  int ExtraFrames = 0;
+
+
+             if ((totalFrameCount) % (int)fpsNumber.Value > 0)
+             {
+                 ExtraFrames = (int)fpsNumber.Value - (totalFrameCount % (int)fpsNumber.Value);
+             }
+
+             for(int i = 0; i < ExtraFrames; i++)
+             {
+
+                 using (Bitmap tempBitmap = new Bitmap(imageWidth*10,imageHeight * 10)) {
+                     using (Graphics gfx = Graphics.FromImage(tempBitmap))
+                     using (SolidBrush brush = new SolidBrush(Color.Black))
+                     {
+                         gfx.FillRectangle(brush, 0, 0, tempBitmap.Width, tempBitmap.Height);
+                     }
+                     tempBitmap.Save(Path.Combine(bilderPath, $"ExtraFrame{i}.png"));
+                 }
+                 myStringBuilder.Append("file '" + $"ExtraFrame{i}.png" + "'\n");
+             }
+            */
+
+            int Seperator = 60 * 60 * 11;  // 11 hours, youtube limit is: smaller than 12 hours, max 120GB, with the currect configuration 11H is about 17,6GB
             if(Seperator % (int)fpsNumber.Value > 0)
             {
-                Seperator = (int)fpsNumber.Value - Seperator % (int)fpsNumber.Value;
+                Seperator = (int)fpsNumber.Value - (Seperator % (int)fpsNumber.Value);
 
             }
+
+            Seperator = 60; // debug
+
             TimeSpan time = TimeSpan.FromSeconds(Seperator);
 
             string timeCut = time.ToString(@"hh\:mm\:ss");
@@ -392,7 +412,7 @@ namespace FileToYoutube
 
             // string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v  libx264rgb -preset faster -crf 0 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor  {Path.Combine(newFolderPath, "black.mp4")}";
             // string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v  libx264rgb -preset faster -crf 0 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor {Path.Combine(newFolderPath, "black.mp4")}";
-            string ffmpegCommand = $"-r {(int)fpsNumber.Value}/100 -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -y -c:v libx264 -preset faster -movflags faststart -vf format=yuv420p -bf 2 -crf 30 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -map 0 -segment_time {timeCut} -f segment -reset_timestamps 1 -ignore_editlist 1 -filter:v untile=10x10 {Path.Combine(newFolderPath, "output%03d.mp4")}";
+            string ffmpegCommand = $"-r {(int)fpsNumber.Value}/100 -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -y -c:v libx264 -an -preset faster -movflags faststart -bf 2 -crf 30 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -map 0 -segment_time {timeCut} -f segment -reset_timestamps 1 -ignore_editlist 1 -filter:v {'"'}untile=10x10 , format=yuv420p{'"'} -force_key_frames {time.TotalSeconds} {Path.Combine(newFolderPath, "output%03d.mp4")}";
            // string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v libx264 -preset faster -movflags faststart -vf format=yuv420p -bf 2 -crf 25 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -map 0 -segment_time 06:00:00 -f segment -reset_timestamps 1 -ignore_editlist 1 {Path.Combine(newFolderPath, "output%03d.mp4")}";
 
           //  ffmpeg - i filename0000006563.png -y -filter:v untile = 10x10 out.mp4
@@ -429,8 +449,12 @@ namespace FileToYoutube
             var streamManifest = await youtube.Videos.Streams.GetManifestAsync(videoUrl);
             // ...or highest quality MP4 video-only stream
             var streamInfo = streamManifest
-             .GetVideoOnlyStreams()
-             .GetWithHighestVideoQuality();
+             .GetVideoOnlyStreams().TryGetWithHighestVideoQuality();
+
+            if(streamInfo == null)
+            {
+                return;
+            }
             var stream = await youtube.Videos.Streams.GetAsync(streamInfo);
 
             lock(fileExtension){
@@ -475,6 +499,8 @@ namespace FileToYoutube
 
         private void button2_Click(object sender, EventArgs e)
         {
+            Console.WriteLine((10000).ToString().Length);
+            return;
 
             QRDecoder Decoder = new QRDecoder();
 
@@ -588,11 +614,17 @@ namespace FileToYoutube
                 {
                     var t = Task<int>.Run(() => downloadFile(s, videoId));
                     t.Wait();
+                    if (fileExtension.Count > videoId )
+                    {
+                        videoId++;
+                    }
 
-
-                    videoId++;
                 }
 
+                if(videoId < 1)
+                {
+                    return;
+                }
                // if (videoId > 1) {
 
                     StringBuilder sbc = new StringBuilder();
