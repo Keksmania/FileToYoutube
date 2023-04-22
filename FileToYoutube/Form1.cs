@@ -33,7 +33,6 @@ namespace FileToYoutube
         private static void TurnVideoToFile(int threadIndex, string workPath)
         {
 
-            Console.WriteLine(threadIndex);
             StringBuilder sb1 = new StringBuilder();
 
             QRDecoder Decoder = new QRDecoder();
@@ -103,7 +102,7 @@ namespace FileToYoutube
                     }
                 }
             }
-            Console.WriteLine(test);
+
             if(sb1.Length > 0) {
 
                 int buffer = 3;
@@ -247,203 +246,17 @@ namespace FileToYoutube
 
         const int bitWidth = 1;
         string filePath = "", newFolderPath = "", bilderPath = "", filePathDecode = "", newFolderPathDecode = "", bilderPathDecode = "";
-        const string ffmpegPath = @"C:\Users\Alper\Desktop\ffmpeg-5.1.2-full_build\bin\ffmpeg.exe"; // das muss mit im Programm included sein
-        const string sevenZipPath = @"C:\Program Files\7-Zip\7z.exe"; // das muss mit im Programm included sein
+        //  const string ffmpegPath = @"C:\Users\Alper\Desktop\ffmpeg-5.1.2-full_build\bin\ffmpeg.exe"; // das muss mit im Programm included sein
+        const string ffmpegPath = @"ffmpeg.exe"; // das muss mit im Programm included sein
+        const string sevenZipPath = @"7z.exe"; // das muss mit im Programm included sein
 
         private void button1_Click(object sender, EventArgs e)
         {
+            toggleControls();
+
+
             backgroundWorker1.RunWorkerAsync();
-            return;
-
-            if (!Directory.Exists(newFolderPath) || !Directory.Exists(bilderPath) || !File.Exists(filePath))
-             {
-                 infoLabel.Text = "Make sure that the folder and file are selected";
-                 return;
-             }
-
-
-
-             infoLabel.Text = "splitting Files...";
-
-             // Start a thread that calls a parameterized instance method.
-
-
-
-             int volumeSize = 0; // (int)volumeSizeNumber.Value;
-
-             var file = File.OpenRead(filePath);
-             var fileSize = file.Length;
-             file.Close();
-
-             volumeSize = (int)(fileSize / ((Environment.ProcessorCount)*16) / 1024);
-
-             if (volumeSize < 100 ) 
-             {
-                 volumeSize = 100;
-             }
-             else if (volumeSize > 50000)
-             {
-                 volumeSize = 50000; // 12 core cpu would mean 12*50 MB so 600*3 = 1200 MB ram at least to put the images back into files, 3x because of bad code :)
-             }
-
-             // The name of the 7-Zip executable
-            
-
-            string password = this.PasswordEncode.Text;
-
-            if(password.Length > 0)
-            {
-                password = " -p\"" + password + '"';
-            }
-
-             // The command to run 7-Zip
-             string sevenZipCommand = $"a -v{volumeSize}k -tzip " + '"' + Path.Combine(newFolderPath, Path.GetFileNameWithoutExtension(filePath)) + ".zip" + "\" \"" + filePath + $"\"{password}";
-
-            // Start 7-Zip
-            Process process = new Process
-             {
-                 StartInfo = new ProcessStartInfo
-                 {
-                     FileName = sevenZipPath,
-                     Arguments = sevenZipCommand,
-                     RedirectStandardOutput = true,
-                     UseShellExecute = false,
-                     CreateNoWindow = true
-                 }
-             };
-             process.Start();
-             process.WaitForExit();
-
-             Console.WriteLine("File split complete.");
-             progressBar1.Value = 10;
-             progressBar1.Refresh();
-
-             string[] files = Directory.GetFiles(newFolderPath);
-
-             infoLabel.Text = "turning volumes into images...";
-           
-
-            int lastI = 0;
-             List<Thread> threads = new List<Thread>();
-             for (int i = 0; i < files.Length; i++)
-             {
-
-                 int index = i;
-
-                 Thread t = new Thread(() => TurnFileToImages(File.ReadAllText(files[index], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath));
-                 t.Start();
-                 threads.Add(t);
-
-                if((i % (Environment.ProcessorCount+1) == 0)){     // if threads =
-                    for (int ii = lastI+1; ii < i+1;ii++)
-                    {
-                        threads[ii].Join();
-                    }
-
-                        lastI = i;
-                }
-                 // }
-
-             }
-             foreach (Thread t in threads)
-             {
-                 t.Join();
-             }
-
-
-           StringBuilder myStringBuilder = new StringBuilder();
-
-
-             int totalFrameCount = 0;
-
-             for (int i = 0; i < myNames.Count; i++)
-             {
-                 for (int ii = 0; ii < myNames[i]; ii++)
-                 {
-                     totalFrameCount += 100;
-                     myStringBuilder.Append("file '" + getName(i, 3) + getName(ii, 20) + ".png" + "'\n");
-
-                 }
-
-             }
-
-
-
-           /*  int ExtraFrames = 0;
-
-
-             if ((totalFrameCount) % (int)fpsNumber.Value > 0)
-             {
-                 ExtraFrames = (int)fpsNumber.Value - (totalFrameCount % (int)fpsNumber.Value);
-             }
-
-             for(int i = 0; i < ExtraFrames; i++)
-             {
-
-                 using (Bitmap tempBitmap = new Bitmap(imageWidth*10,imageHeight * 10)) {
-                     using (Graphics gfx = Graphics.FromImage(tempBitmap))
-                     using (SolidBrush brush = new SolidBrush(Color.Black))
-                     {
-                         gfx.FillRectangle(brush, 0, 0, tempBitmap.Width, tempBitmap.Height);
-                     }
-                     tempBitmap.Save(Path.Combine(bilderPath, $"ExtraFrame{i}.png"));
-                 }
-                 myStringBuilder.Append("file '" + $"ExtraFrame{i}.png" + "'\n");
-             }
-            */
-
-            int Seperator = 60 * 60 * 11;  // 11 hours, youtube limit is: smaller than 12 hours, max 120GB, with the currect configuration 11H is about 17,6GB
-            if(Seperator % (int)fpsNumber.Value > 0)
-            {
-                Seperator = (int)fpsNumber.Value - (Seperator % (int)fpsNumber.Value);
-
-            }
-
-
-            TimeSpan time = TimeSpan.FromSeconds(Seperator);
-
-            string timeCut = time.ToString(@"hh\:mm\:ss");
-
-
-
-
-            File.WriteAllText(Path.Combine(bilderPath, "WriteLines.txt"), myStringBuilder.ToString());
-
-            progressBar1.Value = 45;
-            progressBar1.Refresh();
-            // make video out of images for each volume
-
-
-
-
-
-
-            // string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v  libx264rgb -preset faster -crf 0 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor  {Path.Combine(newFolderPath, "black.mp4")}";
-            // string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v  libx264rgb -preset faster -crf 0 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor {Path.Combine(newFolderPath, "black.mp4")}";
-            string ffmpegCommand = $"-r {(int)fpsNumber.Value}/100 -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -y -c:v libx264 -an -preset faster -movflags faststart -bf 2 -crf 30 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -map 0 -segment_time {timeCut} -f segment -reset_timestamps 1 -ignore_editlist 1 -filter:v {'"'}untile=10x10 , format=yuv420p{'"'} -force_key_frames {time.TotalSeconds} {Path.Combine(newFolderPath, "output%03d.mp4")}";
-           // string ffmpegCommand = $"-r {(int)fpsNumber.Value} -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -c:v libx264 -preset faster -movflags faststart -vf format=yuv420p -bf 2 -crf 25 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -map 0 -segment_time 06:00:00 -f segment -reset_timestamps 1 -ignore_editlist 1 {Path.Combine(newFolderPath, "output%03d.mp4")}";
-
-          //  ffmpeg - i filename0000006563.png -y -filter:v untile = 10x10 out.mp4
-
-                 Process process2 = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = ffmpegPath,
-                    Arguments = ffmpegCommand,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    WorkingDirectory = bilderPath
-                }
-            };
-            process2.Start();
-            process2.WaitForExit();
-            progressBar1.Value = 100;
-            progressBar1.Refresh();
-            return;
-
-
+         
 
         }
 
@@ -569,6 +382,24 @@ namespace FileToYoutube
 
 
 
+        private void toggleControls()
+        {
+            this.button1.Enabled = !this.button1.Enabled;
+            this.button3.Enabled = !this.button3.Enabled;
+            this.button4.Enabled = !this.button4.Enabled;
+            this.Select1.Enabled = !this.Select1.Enabled;
+            this.Select2.Enabled = !this.Select2.Enabled;
+            this.youtubeButton.Enabled = !this.youtubeButton.Enabled;
+            this.videoHeightNumber.Enabled = !this.videoHeightNumber.Enabled;
+            this.videoWidthNumber.Enabled = !this.videoWidthNumber.Enabled;
+            this.fpsNumber.Enabled = !this.fpsNumber.Enabled;
+            this.PasswordEncode.Enabled = !this.PasswordEncode.Enabled;
+            this.PasswordDecode.Enabled = !this.PasswordDecode.Enabled;
+            this.youtubeList.Enabled = !this.youtubeList.Enabled;
+            this.startButton.Enabled = !this.startButton.Enabled;
+            this.youtubeText.Enabled = !this.youtubeText.Enabled;
+            this.button2.Enabled = !this.button2.Enabled;
+        }
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
@@ -577,6 +408,9 @@ namespace FileToYoutube
                 infoLabel.Text = "Make sure that the folder and file are selected";
                 return;
             }
+
+            myNames.Clear();
+          
 
             backgroundWorker1.ReportProgress(5);
 
@@ -592,15 +426,17 @@ namespace FileToYoutube
             var fileSize = file.Length;
             file.Close();
 
-            volumeSize = (int)(fileSize / ((Environment.ProcessorCount) * 16) / 1024);
+            volumeSize = (int)(fileSize / (100*Environment.ProcessorCount) / 1024);
 
-            if (volumeSize < 100)
+
+
+            if (volumeSize < 285)
             {
-                volumeSize = 100;
+                volumeSize = 285;
             }
-            else if (volumeSize > 50000)
+            else if (volumeSize > 2850)
             {
-                volumeSize = 50000; // 12 core cpu would mean 12*50 MB so 600*3 = 1200 MB ram at least to put the images back into files, 3x because of bad code :)
+                volumeSize = 2850; 
             }
 
             // The name of the 7-Zip executable
@@ -711,7 +547,7 @@ namespace FileToYoutube
 
             // make video out of images for each volume
 
-            string ffmpegCommand = $"-r {(int)fpsNumber.Value}/100 -f concat -safe 0  -i {Path.Combine(bilderPath, "WriteLines.txt")} -y -c:v libx264 -an -preset faster -movflags faststart -bf 2 -crf 30 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -map 0 -segment_time {timeCut} -f segment -reset_timestamps 1 -ignore_editlist 1 -filter:v {'"'}untile=10x10 , format=yuv420p{'"'} -force_key_frames {time.TotalSeconds} {Path.Combine(newFolderPath, "output%03d.mp4")}";
+            string ffmpegCommand = $"-r {(int)fpsNumber.Value}/100 -f concat -safe 0  -i \"{Path.Combine(bilderPath, "WriteLines.txt")}\" -y -c:v libx264 -an -preset faster -movflags faststart -bf 2 -crf 30 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -map 0 -segment_time {timeCut} -f segment -reset_timestamps 1 -ignore_editlist 1 -filter:v {'"'}untile=10x10 , format=yuv420p{'"'} -force_key_frames {time.TotalSeconds} \"{Path.Combine(newFolderPath, "output%03d.mp4")}\"";
 
 
             Process process2 = new Process
@@ -730,41 +566,66 @@ namespace FileToYoutube
             process2.WaitForExit();
 
             backgroundWorker1.ReportProgress(100);
-            return;
 
 
         }
 
         private void backgroundWorker1_ProgressChanged_1(object sender, ProgressChangedEventArgs e)
         {
-            progressBar1.Value = e.ProgressPercentage;
+            int value = e.ProgressPercentage;
+            if (value > 100)
+            {
+                value = 100;
+            }
+            progressBar1.Value = value;
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            toggleControls();
+        //    backgroundWorker1.
 
+        }
+
+        private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
+        {
             bool youtubeDownloadBool = youtubeList.Items.Count > 0;
 
-            progressBar2.Value = 10;
-            progressBar2.Refresh();
-
+            
             string ffmpegCommand = "";
             if (youtubeDownloadBool)
             {
                 int videoId = 0;
                 foreach (string s in youtubeList.Items)
                 {
-                    var t = Task<int>.Run(() => downloadFile(s, videoId));
-                    t.Wait();
+                    try
+                    {
+                        var t = Task<int>.Run(() => downloadFile(s, videoId));
+                        t.Wait();
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Link is not a Youtube link or video is private or processing is not finished.", "Error", 0, MessageBoxIcon.Error);
+                    }
+                  
+                    backgroundWorker2.ReportProgress(videoId);
                     if (fileExtension.Count > videoId)
                     {
-                        videoId++;
+                        if(File.Exists($"{ Path.Combine(newFolderPathDecode, "video" + getName(videoId, 3) + $".{fileExtension[videoId]}").Replace("\\", "/")}"))
+                        {
+                            videoId++;
+                        } else
+                        {
+                            break;
+                        }
+                       
                     }
 
                 }
 
-                if (videoId < 1)
+                if (videoId < youtubeList.Items.Count)
                 {
+                    MessageBox.Show($"One or more videos could not be downloaded!{Environment.NewLine}Make sure that the video processing is completly done!", "Error", 0, MessageBoxIcon.Error);
                     return;
                 }
                 // if (videoId > 1) {
@@ -772,7 +633,7 @@ namespace FileToYoutube
                 StringBuilder sbc = new StringBuilder();
                 for (int i = 0; i < videoId; i++)
                 {
-                    sbc.Append($"file { Path.Combine(newFolderPathDecode, "video" + getName(i, 3) + $".{fileExtension[i]}").Replace("\\", "/")}{System.Environment.NewLine}");
+                    sbc.Append($"file '{ Path.Combine(newFolderPathDecode, "video" + getName(i, 3) + $".{fileExtension[i]}").Replace("\\", "/")}'{System.Environment.NewLine}");
                     // string tempString = $"File {Path.Combine(newFolderPathDecode, "video" + getName(videoId, 3) + ".mp4")}{System.Environment.NewLine}File {Path.Combine(bilderPathDecode, "EmptyFrame.png")}";
 
 
@@ -780,10 +641,10 @@ namespace FileToYoutube
                 }
                 File.WriteAllText(Path.Combine(bilderPathDecode, "write.txt"), sbc.ToString());
 
+                backgroundWorker2.ReportProgress(50);
 
-
-                ffmpegCommand = $"-f concat -safe 0 -i {Path.Combine(bilderPathDecode, "write.txt")} -pix_fmt rgb24 -filter_complex \"tile=10x10\" -s {imageWidth * 10}x{imageHeight * 10}  -sws_flags neighbor { Path.Combine(bilderPathDecode, $"filename%10d.png")}";
-                           Process process2 = new Process
+                ffmpegCommand = $"-f concat -safe 0 -i \"{Path.Combine(bilderPathDecode, "write.txt")}\" -pix_fmt rgb24 -filter_complex \"tile=10x10\" -s {imageWidth * 10}x{imageHeight * 10}  -sws_flags neighbor \"{ Path.Combine(bilderPathDecode, $"filename%10d.png")}\"";
+                Process process2 = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
@@ -806,11 +667,7 @@ namespace FileToYoutube
             {
                 return;
             }
-
-
-            progressBar2.Value = 50;
-            progressBar2.Refresh();
-
+            backgroundWorker2.ReportProgress(70);
 
 
             imageFiles = Directory.GetFiles(bilderPathDecode, "*.png", SearchOption.TopDirectoryOnly);
@@ -842,6 +699,11 @@ namespace FileToYoutube
                 var t = Task<int>.Run(() => findWhite(temp2, temp, temp3));
                 tasks.Add(t);
 
+                if(index % (Environment.ProcessorCount+1) == 0)
+                {
+                    t.Wait();
+                }
+
             }
 
 
@@ -850,7 +712,7 @@ namespace FileToYoutube
                 t.Wait();
             }
 
-
+            backgroundWorker2.ReportProgress(80);
             // now we can create a chunk list -> startPos 
 
 
@@ -895,29 +757,6 @@ namespace FileToYoutube
             fileMapping.Clear();
 
 
-
-
-            /*List<string[]> imageChunks = new List<string[]>();
-
-            int loopIndex = 0;
-            int lastStart = 0;
-
-            foreach( string image in imageFiles)
-            {   
-                FileInfo fi = new FileInfo(image);
-                if (fi.Length < 4096)
-                {
-                    string[] chunk = new string[loopIndex - lastStart + 1 ];
-                    Array.Copy(imageFiles, lastStart, chunk, 0,loopIndex - lastStart + 1);
-                    imageChunks.Add(chunk);
-                    lastStart = loopIndex+1;
-
-
-                }
-
-                loopIndex++;
-            }
-               */
             List<Task> waitTasks = new List<Task>();
             for (int i = 0; i < filesToRecover.Count; i++)
             {
@@ -931,7 +770,7 @@ namespace FileToYoutube
                 t.Wait();
             }
 
-
+            backgroundWorker2.ReportProgress(90);
 
             string password = this.PasswordDecode.Text;
 
@@ -941,7 +780,7 @@ namespace FileToYoutube
             }
 
             // The command to run 7-Zip
-            string sevenZipCommand = $"x -y -o\"{newFolderPathDecode}\" \"{Path.Combine(newFolderPathDecode,"myZip")}.zip.*\"{password}";
+            string sevenZipCommand = $"x -y -o\"{newFolderPathDecode}\" \"{Path.Combine(newFolderPathDecode, "myZip")}.zip.*\"{password}";
 
 
 
@@ -960,10 +799,55 @@ namespace FileToYoutube
             process.Start();
             process.WaitForExit();
 
+            backgroundWorker2.ReportProgress(100);
 
 
+        }
 
-            progressBar2.Value = 100;
+        private void backgroundWorker2_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            int value = e.ProgressPercentage;
+            if (value > 100)
+            {
+                value = 100;
+            }
+            progressBar2.Value = value;
+        }
+
+        private void backgroundWorker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            toggleControls();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (Directory.Exists(newFolderPathDecode))
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    Arguments = newFolderPathDecode,
+                    FileName = "explorer.exe"
+                };
+
+                Process.Start(startInfo);
+            }
+            else
+            {
+                MessageBox.Show(string.Format("{0} Directory does not exist!", newFolderPathDecode));
+            }
+        }
+        
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            filesToRecover.Clear();
+            fileExtension.Clear();
+            fileMapping.Clear();
+
+            toggleControls();
+            backgroundWorker2.RunWorkerAsync();
+
+           
         }
 
 
@@ -1004,26 +888,39 @@ namespace FileToYoutube
 
             if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
             {
-                string folderPath = folderBrowserDialog.SelectedPath;
-                Console.WriteLine("Selected folder: " + folderPath);
+                string[] testVar = Directory.GetFiles(folderBrowserDialog.SelectedPath, "*", SearchOption.AllDirectories);
 
-                //string folderName = "Work";
-                //    newFolderPath = Path.Combine(folderPath, folderName);
-                newFolderPath =folderPath;
-               // if (!Directory.Exists(newFolderPath))
-               // {
+                if (1 > testVar.Length)
+                {
+                    string folderPath = folderBrowserDialog.SelectedPath;
+                    Console.WriteLine("Selected folder: " + folderPath);
+
+                    //string folderName = "Work";
+                    //    newFolderPath = Path.Combine(folderPath, folderName);
+                    newFolderPath = folderPath;
+                    // if (!Directory.Exists(newFolderPath))
+                    // {
                     Directory.CreateDirectory(newFolderPath);
                     bilderPath = Path.Combine(newFolderPath, "Images");
                     Directory.CreateDirectory(bilderPath);
                     Console.WriteLine("Folder created: " + newFolderPath);
-             //   }
-             //   else
-             //   {
-               //     Console.WriteLine("Folder already exists: " + newFolderPath);
-             //   }
+                    //   }
+                    //   else
+                    //   {
+                    //     Console.WriteLine("Folder already exists: " + newFolderPath);
+                    //   }
+                    textBox2.Text = newFolderPath;
+                    textBox2.Refresh();
+                }
+                else
+                {
+                    MessageBox.Show("Please select an empty folder!", "Error", 0, MessageBoxIcon.Error);
+                    textBox2.Text = "";
+                    textBox2.Refresh();
+                }
             }
 
-            textBox2.Text = newFolderPath;
+        
         }
 
 
@@ -1031,8 +928,15 @@ namespace FileToYoutube
         {
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
 
-            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+           
+
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK )
             {
+                
+
+                string[] testVar = Directory.GetFiles( folderBrowserDialog.SelectedPath, "*", SearchOption.AllDirectories);
+                
+                if (1 > testVar.Length) { 
                 string folderPath = folderBrowserDialog.SelectedPath;
                 Console.WriteLine("Selected folder: " + folderPath);
 
@@ -1045,15 +949,24 @@ namespace FileToYoutube
                     bilderPathDecode = Path.Combine(newFolderPathDecode, "Images");
                     Directory.CreateDirectory(bilderPathDecode);
                     Console.WriteLine("Folder created: " + newFolderPathDecode);
-               // }
-               // else
-               // {
+                // }
+                // else
+                // {
                 //    Console.WriteLine("Folder already exists: " + newFolderPathDecode);
                 //}
-            }
 
-            textBox4.Text = newFolderPathDecode;
-            textBox4.Refresh();
+                
+                textBox4.Text = newFolderPathDecode;
+                textBox4.Refresh();
+                }
+                else
+                {
+                    MessageBox.Show("Please select an empty folder!", "Error", 0,MessageBoxIcon.Error);
+                    textBox4.Text = "";
+                    textBox4.Refresh();
+                }
+            } 
+
         }
 
     }
