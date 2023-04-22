@@ -56,10 +56,17 @@ namespace FileToYoutube
             this.button4 = new System.Windows.Forms.Button();
             this.progressBar2 = new System.Windows.Forms.ProgressBar();
             this.youtubeGroup = new System.Windows.Forms.GroupBox();
-            this.youtubeText = new System.Windows.Forms.TextBox();
-            this.youtubeList = new System.Windows.Forms.ListBox();
             this.youtubeButton = new System.Windows.Forms.Button();
+            this.youtubeList = new System.Windows.Forms.ListBox();
+            this.youtubeText = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.PasswordEncode = new System.Windows.Forms.TextBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.PasswordDecode = new System.Windows.Forms.TextBox();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
+            this.button2 = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -70,6 +77,8 @@ namespace FileToYoutube
             this.groupBox8.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.youtubeGroup.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // startButton
@@ -85,7 +94,7 @@ namespace FileToYoutube
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 350);
+            this.progressBar1.Location = new System.Drawing.Point(12, 404);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(343, 23);
             this.progressBar1.TabIndex = 2;
@@ -128,7 +137,7 @@ namespace FileToYoutube
             this.groupBox3.Size = new System.Drawing.Size(343, 48);
             this.groupBox3.TabIndex = 14;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Step 2: Select work folder";
+            this.groupBox3.Text = "Step 2: Select work folder (MUST BE EMPTY)";
             // 
             // textBox2
             // 
@@ -259,7 +268,7 @@ namespace FileToYoutube
             // groupBox6
             // 
             this.groupBox6.Controls.Add(this.startButton);
-            this.groupBox6.Location = new System.Drawing.Point(12, 244);
+            this.groupBox6.Location = new System.Drawing.Point(12, 298);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(343, 100);
             this.groupBox6.TabIndex = 17;
@@ -284,7 +293,7 @@ namespace FileToYoutube
             this.groupBox8.Size = new System.Drawing.Size(343, 48);
             this.groupBox8.TabIndex = 17;
             this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "Step 2: Select work folder";
+            this.groupBox8.Text = "Step 2: Select work folder (MUST BE EMPTY)";
             // 
             // textBox4
             // 
@@ -324,8 +333,9 @@ namespace FileToYoutube
             // 
             // groupBox9
             // 
+            this.groupBox9.Controls.Add(this.button2);
             this.groupBox9.Controls.Add(this.button4);
-            this.groupBox9.Location = new System.Drawing.Point(376, 244);
+            this.groupBox9.Location = new System.Drawing.Point(376, 298);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(343, 100);
             this.groupBox9.TabIndex = 19;
@@ -345,7 +355,7 @@ namespace FileToYoutube
             // 
             // progressBar2
             // 
-            this.progressBar2.Location = new System.Drawing.Point(376, 350);
+            this.progressBar2.Location = new System.Drawing.Point(376, 404);
             this.progressBar2.Name = "progressBar2";
             this.progressBar2.Size = new System.Drawing.Size(343, 23);
             this.progressBar2.TabIndex = 18;
@@ -362,21 +372,6 @@ namespace FileToYoutube
             this.youtubeGroup.TabStop = false;
             this.youtubeGroup.Text = "Step 1: Youtube links in order (first: part 1, second: part 2 and so on)";
             // 
-            // youtubeText
-            // 
-            this.youtubeText.Location = new System.Drawing.Point(7, 20);
-            this.youtubeText.Name = "youtubeText";
-            this.youtubeText.Size = new System.Drawing.Size(249, 20);
-            this.youtubeText.TabIndex = 0;
-            // 
-            // youtubeList
-            // 
-            this.youtubeList.FormattingEnabled = true;
-            this.youtubeList.Location = new System.Drawing.Point(7, 47);
-            this.youtubeList.Name = "youtubeList";
-            this.youtubeList.Size = new System.Drawing.Size(330, 82);
-            this.youtubeList.TabIndex = 1;
-            // 
             // youtubeButton
             // 
             this.youtubeButton.Location = new System.Drawing.Point(262, 18);
@@ -386,6 +381,21 @@ namespace FileToYoutube
             this.youtubeButton.Text = "Add";
             this.youtubeButton.UseVisualStyleBackColor = true;
             this.youtubeButton.Click += new System.EventHandler(this.youtubeButton_Click);
+            // 
+            // youtubeList
+            // 
+            this.youtubeList.FormattingEnabled = true;
+            this.youtubeList.Location = new System.Drawing.Point(7, 47);
+            this.youtubeList.Name = "youtubeList";
+            this.youtubeList.Size = new System.Drawing.Size(330, 82);
+            this.youtubeList.TabIndex = 1;
+            // 
+            // youtubeText
+            // 
+            this.youtubeText.Location = new System.Drawing.Point(7, 20);
+            this.youtubeText.Name = "youtubeText";
+            this.youtubeText.Size = new System.Drawing.Size(249, 20);
+            this.youtubeText.TabIndex = 0;
             // 
             // button1
             // 
@@ -397,12 +407,73 @@ namespace FileToYoutube
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click_2);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.PasswordEncode);
+            this.groupBox1.Location = new System.Drawing.Point(12, 244);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(343, 53);
+            this.groupBox1.TabIndex = 17;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Optional: Key";
+            // 
+            // PasswordEncode
+            // 
+            this.PasswordEncode.Location = new System.Drawing.Point(6, 20);
+            this.PasswordEncode.Name = "PasswordEncode";
+            this.PasswordEncode.Size = new System.Drawing.Size(331, 20);
+            this.PasswordEncode.TabIndex = 0;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.PasswordDecode);
+            this.groupBox4.Location = new System.Drawing.Point(376, 244);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(343, 53);
+            this.groupBox4.TabIndex = 18;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Optional: Key";
+            // 
+            // PasswordDecode
+            // 
+            this.PasswordDecode.Location = new System.Drawing.Point(6, 20);
+            this.PasswordDecode.Name = "PasswordDecode";
+            this.PasswordDecode.Size = new System.Drawing.Size(331, 20);
+            this.PasswordDecode.TabIndex = 0;
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged_1);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
+            // backgroundWorker2
+            // 
+            this.backgroundWorker2.WorkerReportsProgress = true;
+            this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
+            this.backgroundWorker2.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker2_ProgressChanged);
+            this.backgroundWorker2.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker2_RunWorkerCompleted);
+            // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.button2.Location = new System.Drawing.Point(6, 74);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(331, 23);
+            this.button2.TabIndex = 1;
+            this.button2.Text = "Open path";
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(731, 402);
+            this.ClientSize = new System.Drawing.Size(731, 461);
+            this.Controls.Add(this.groupBox4);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.youtubeGroup);
             this.Controls.Add(this.groupBox9);
@@ -436,6 +507,10 @@ namespace FileToYoutube
             this.groupBox9.ResumeLayout(false);
             this.youtubeGroup.ResumeLayout(false);
             this.youtubeGroup.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -473,6 +548,13 @@ namespace FileToYoutube
         private System.Windows.Forms.ListBox youtubeList;
         private System.Windows.Forms.TextBox youtubeText;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.TextBox PasswordEncode;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.TextBox PasswordDecode;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker2;
+        private System.Windows.Forms.Button button2;
     }
 }
 
