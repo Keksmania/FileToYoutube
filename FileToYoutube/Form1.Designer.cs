@@ -46,6 +46,7 @@ namespace FileToYoutube
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.button5 = new System.Windows.Forms.Button();
             this.infoLabel = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
@@ -53,6 +54,7 @@ namespace FileToYoutube
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.button2 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.progressBar2 = new System.Windows.Forms.ProgressBar();
             this.youtubeGroup = new System.Windows.Forms.GroupBox();
@@ -66,7 +68,9 @@ namespace FileToYoutube
             this.PasswordDecode = new System.Windows.Forms.TextBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
-            this.button2 = new System.Windows.Forms.Button();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.keyButton = new System.Windows.Forms.Button();
+            this.copyButton = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -94,7 +98,7 @@ namespace FileToYoutube
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 404);
+            this.progressBar1.Location = new System.Drawing.Point(12, 430);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(343, 23);
             this.progressBar1.TabIndex = 2;
@@ -189,7 +193,7 @@ namespace FileToYoutube
             this.fpsNumber.Size = new System.Drawing.Size(120, 20);
             this.fpsNumber.TabIndex = 7;
             this.fpsNumber.Value = new decimal(new int[] {
-            6,
+            24,
             0,
             0,
             0});
@@ -267,13 +271,25 @@ namespace FileToYoutube
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.button5);
             this.groupBox6.Controls.Add(this.startButton);
-            this.groupBox6.Location = new System.Drawing.Point(12, 298);
+            this.groupBox6.Location = new System.Drawing.Point(12, 324);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(343, 100);
+            this.groupBox6.Size = new System.Drawing.Size(343, 103);
             this.groupBox6.TabIndex = 17;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Step 4: start processing";
+            // 
+            // button5
+            // 
+            this.button5.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.button5.Location = new System.Drawing.Point(6, 74);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(331, 23);
+            this.button5.TabIndex = 2;
+            this.button5.Text = "Open path";
+            this.button5.UseVisualStyleBackColor = false;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // infoLabel
             // 
@@ -335,12 +351,23 @@ namespace FileToYoutube
             // 
             this.groupBox9.Controls.Add(this.button2);
             this.groupBox9.Controls.Add(this.button4);
-            this.groupBox9.Location = new System.Drawing.Point(376, 298);
+            this.groupBox9.Location = new System.Drawing.Point(376, 324);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(343, 100);
             this.groupBox9.TabIndex = 19;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Step 3: start processing";
+            // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.button2.Location = new System.Drawing.Point(6, 74);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(331, 23);
+            this.button2.TabIndex = 1;
+            this.button2.Text = "Open path";
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button4
             // 
@@ -355,7 +382,7 @@ namespace FileToYoutube
             // 
             // progressBar2
             // 
-            this.progressBar2.Location = new System.Drawing.Point(376, 404);
+            this.progressBar2.Location = new System.Drawing.Point(376, 430);
             this.progressBar2.Name = "progressBar2";
             this.progressBar2.Size = new System.Drawing.Size(343, 23);
             this.progressBar2.TabIndex = 18;
@@ -409,18 +436,21 @@ namespace FileToYoutube
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.copyButton);
+            this.groupBox1.Controls.Add(this.keyButton);
             this.groupBox1.Controls.Add(this.PasswordEncode);
             this.groupBox1.Location = new System.Drawing.Point(12, 244);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(343, 53);
+            this.groupBox1.Size = new System.Drawing.Size(343, 74);
             this.groupBox1.TabIndex = 17;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Optional: Key";
             // 
             // PasswordEncode
             // 
-            this.PasswordEncode.Location = new System.Drawing.Point(6, 20);
+            this.PasswordEncode.Location = new System.Drawing.Point(6, 43);
             this.PasswordEncode.Name = "PasswordEncode";
+            this.PasswordEncode.PasswordChar = '●';
             this.PasswordEncode.Size = new System.Drawing.Size(331, 20);
             this.PasswordEncode.TabIndex = 0;
             // 
@@ -429,15 +459,16 @@ namespace FileToYoutube
             this.groupBox4.Controls.Add(this.PasswordDecode);
             this.groupBox4.Location = new System.Drawing.Point(376, 244);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(343, 53);
+            this.groupBox4.Size = new System.Drawing.Size(343, 74);
             this.groupBox4.TabIndex = 18;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Optional: Key";
             // 
             // PasswordDecode
             // 
-            this.PasswordDecode.Location = new System.Drawing.Point(6, 20);
+            this.PasswordDecode.Location = new System.Drawing.Point(5, 43);
             this.PasswordDecode.Name = "PasswordDecode";
+            this.PasswordDecode.PasswordChar = '●';
             this.PasswordDecode.Size = new System.Drawing.Size(331, 20);
             this.PasswordDecode.TabIndex = 0;
             // 
@@ -455,16 +486,36 @@ namespace FileToYoutube
             this.backgroundWorker2.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker2_ProgressChanged);
             this.backgroundWorker2.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker2_RunWorkerCompleted);
             // 
-            // button2
+            // checkBox1
             // 
-            this.button2.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.button2.Location = new System.Drawing.Point(6, 74);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(331, 23);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "Open path";
-            this.button2.UseVisualStyleBackColor = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(580, 3);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(139, 17);
+            this.checkBox1.TabIndex = 24;
+            this.checkBox1.Text = "Add video files manually";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // keyButton
+            // 
+            this.keyButton.Location = new System.Drawing.Point(262, 16);
+            this.keyButton.Name = "keyButton";
+            this.keyButton.Size = new System.Drawing.Size(74, 24);
+            this.keyButton.TabIndex = 1;
+            this.keyButton.Text = "generate";
+            this.keyButton.UseVisualStyleBackColor = true;
+            this.keyButton.Click += new System.EventHandler(this.keyButton_Click);
+            // 
+            // copyButton
+            // 
+            this.copyButton.Location = new System.Drawing.Point(186, 16);
+            this.copyButton.Name = "copyButton";
+            this.copyButton.Size = new System.Drawing.Size(74, 24);
+            this.copyButton.TabIndex = 2;
+            this.copyButton.Text = "copy key";
+            this.copyButton.UseVisualStyleBackColor = true;
+            this.copyButton.Click += new System.EventHandler(this.button6_Click);
             // 
             // Form1
             // 
@@ -472,6 +523,7 @@ namespace FileToYoutube
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(731, 461);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button1);
@@ -555,6 +607,10 @@ namespace FileToYoutube
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.ComponentModel.BackgroundWorker backgroundWorker2;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Button keyButton;
+        private System.Windows.Forms.Button copyButton;
     }
 }
 

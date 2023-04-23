@@ -183,7 +183,7 @@ namespace FileToYoutube
                 counter++;
                 if (counter % 100 == 0)
                 {
-                    hugeBitmap.Save(Path.Combine(bilderPath, getName(threadIndex, 3) + getName(realNameIndex, 20) + ".png"), ImageFormat.Png);
+                    hugeBitmap.Save(Path.Combine(bilderPath, getName(threadIndex, 6) + getName(realNameIndex, 17) + ".png"), ImageFormat.Png);
                     y = 0;
                     x = 0;
                     hugeBitmap = new Bitmap(imageWidth * 10, imageHeight * 10);
@@ -212,7 +212,7 @@ namespace FileToYoutube
             g.DrawImage(bitmap2, x*imageWidth, y*imageHeight);
             bitmap2.Dispose();
 
-            hugeBitmap.Save(Path.Combine(bilderPath, getName(threadIndex, 3) + getName(realNameIndex, 20) + ".png"), ImageFormat.Png);
+            hugeBitmap.Save(Path.Combine(bilderPath, getName(threadIndex, 6) + getName(realNameIndex, 17) + ".png"), ImageFormat.Png);
             hugeBitmap.Dispose();
             qrCodeImage.Dispose();
             realNameIndex++;
@@ -249,6 +249,15 @@ namespace FileToYoutube
         //  const string ffmpegPath = @"C:\Users\Alper\Desktop\ffmpeg-5.1.2-full_build\bin\ffmpeg.exe"; // das muss mit im Programm included sein
         const string ffmpegPath = @"ffmpeg.exe"; // das muss mit im Programm included sein
         const string sevenZipPath = @"7z.exe"; // das muss mit im Programm included sein
+
+        private void clearAllFields()
+        {
+            this.PasswordDecode.Text = "";
+            this.PasswordEncode.Text = "";
+            youtubeList.Items.Clear();
+            textBox1.Text = "";
+            this.Refresh();
+        }
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -291,19 +300,40 @@ namespace FileToYoutube
 
         private void youtubeButton_Click(object sender, EventArgs e)
         {
-            if (!youtubeText.Text.ToLower().Contains("http://") && !youtubeText.Text.ToLower().Contains("https://"))
-            {
-                youtubeText.Text = "https://" + youtubeText.Text.Trim();
-            }
-            var uriName = youtubeText.Text;
-            Uri uriResult;
-            bool result = Uri.TryCreate(uriName, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
 
-            if (!youtubeList.Items.Contains(uriName) && result)
+           
+            if (checkBox1.Checked)
             {
-                youtubeList.Items.Add(uriName);
-            }
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "Youtube Files *.mp4|*.mp4|*.webm|*.webm";
+                openFileDialog.FilterIndex = 1;
+                openFileDialog.RestoreDirectory = true;
 
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+
+                    if (File.Exists(openFileDialog.FileName))
+                    {
+                        youtubeList.Items.Add(openFileDialog.FileName);
+                    };
+
+                }
+               
+
+            } else { 
+                if (!youtubeText.Text.ToLower().Contains("http://") && !youtubeText.Text.ToLower().Contains("https://"))
+                {
+                    youtubeText.Text = "https://" + youtubeText.Text.Trim();
+                }
+                var uriName = youtubeText.Text;
+                Uri uriResult;
+                bool result = Uri.TryCreate(uriName, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+
+                if (!youtubeList.Items.Contains(uriName) && result)
+                {
+                    youtubeList.Items.Add(uriName);
+                }
+            }
             youtubeText.Text = "";
             youtubeText.Refresh();
             youtubeList.Refresh();
@@ -399,6 +429,7 @@ namespace FileToYoutube
             this.startButton.Enabled = !this.startButton.Enabled;
             this.youtubeText.Enabled = !this.youtubeText.Enabled;
             this.button2.Enabled = !this.button2.Enabled;
+            this.button5.Enabled = !this.button5.Enabled;
         }
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -446,11 +477,11 @@ namespace FileToYoutube
 
             if (password.Length > 0)
             {
-                password = " -p\"" + password + '"';
+                password = " -mhe=on -p\"" + password + '"';
             }
 
             // The command to run 7-Zip
-            string sevenZipCommand = $"a -v{volumeSize}k -tzip " + '"' + Path.Combine(newFolderPath, Path.GetFileNameWithoutExtension(filePath)) + ".zip" + "\" \"" + filePath + $"\"{password}";
+            string sevenZipCommand = $"a -v{volumeSize}k -t7z " + '"' + Path.Combine(newFolderPath, Path.GetFileNameWithoutExtension(filePath)) + ".7z" + "\" \"" + filePath + $"\"{password}";
 
             // Start 7-Zip
             Process process = new Process
@@ -474,7 +505,7 @@ namespace FileToYoutube
            // infoLabel.Text = "turning volumes into images...";
 
             float stepSize = 50 / files.Length + 20;
-            float counter = 0;
+
             int lastI = 0;
             List<Thread> threads = new List<Thread>();
             for (int i = 0; i < files.Length; i++)
@@ -492,11 +523,6 @@ namespace FileToYoutube
                     {
                         threads[ii].Join();
 
-                        counter += stepSize;
-                       
-
-                       
-                        backgroundWorker1.ReportProgress((int)counter);
                       
                     }
 
@@ -521,7 +547,7 @@ namespace FileToYoutube
                 for (int ii = 0; ii < myNames[i]; ii++)
                 {
                     totalFrameCount += 100;
-                    myStringBuilder.Append("file '" + getName(i, 3) + getName(ii, 20) + ".png" + "'\n");
+                    myStringBuilder.Append("file '" + getName(i, 6) + getName(ii, 17) + ".png" + "'\n");
 
                 }
 
@@ -583,6 +609,7 @@ namespace FileToYoutube
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             toggleControls();
+            clearAllFields();
         //    backgroundWorker1.
 
         }
@@ -593,25 +620,32 @@ namespace FileToYoutube
 
             
             string ffmpegCommand = "";
-            if (youtubeDownloadBool)
+            if (youtubeDownloadBool )
             {
                 int videoId = 0;
                 foreach (string s in youtubeList.Items)
                 {
-                    try
+                    if (!checkBox1.Checked) { 
+                        try
+                        {
+                            var t = Task<int>.Run(() => downloadFile(s, videoId));
+                            t.Wait();
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Link is not a Youtube link or video is private or processing is not finished.", "Error", 0, MessageBoxIcon.Error);
+                        }
+                    } else
                     {
-                        var t = Task<int>.Run(() => downloadFile(s, videoId));
-                        t.Wait();
+                        fileExtension.Add(videoId, s.Split('.')[1]);
+
                     }
-                    catch
-                    {
-                        MessageBox.Show("Link is not a Youtube link or video is private or processing is not finished.", "Error", 0, MessageBoxIcon.Error);
-                    }
-                  
+
                     backgroundWorker2.ReportProgress(videoId);
                     if (fileExtension.Count > videoId)
                     {
-                        if(File.Exists($"{ Path.Combine(newFolderPathDecode, "video" + getName(videoId, 3) + $".{fileExtension[videoId]}").Replace("\\", "/")}"))
+                        
+                        if(File.Exists($"{ Path.Combine(newFolderPathDecode, "video" + getName(videoId, 3) + $".{fileExtension[videoId]}").Replace("\\", "/")}") || checkBox1.Checked)
                         {
                             videoId++;
                         } else
@@ -633,7 +667,14 @@ namespace FileToYoutube
                 StringBuilder sbc = new StringBuilder();
                 for (int i = 0; i < videoId; i++)
                 {
-                    sbc.Append($"file '{ Path.Combine(newFolderPathDecode, "video" + getName(i, 3) + $".{fileExtension[i]}").Replace("\\", "/")}'{System.Environment.NewLine}");
+                    if (checkBox1.Checked)
+                    {
+                        sbc.Append("file '" + ((string)youtubeList.Items[i]).Replace("\\", "/") + "'"+ System.Environment.NewLine);
+                    } else
+                    {
+                        sbc.Append($"file '{ Path.Combine(newFolderPathDecode, "video" + getName(i, 3) + $".{fileExtension[i]}").Replace("\\", "/")}'{System.Environment.NewLine}");
+                    }
+                  
                     // string tempString = $"File {Path.Combine(newFolderPathDecode, "video" + getName(videoId, 3) + ".mp4")}{System.Environment.NewLine}File {Path.Combine(bilderPathDecode, "EmptyFrame.png")}";
 
 
@@ -817,6 +858,7 @@ namespace FileToYoutube
         private void backgroundWorker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             toggleControls();
+            clearAllFields();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -836,7 +878,50 @@ namespace FileToYoutube
                 MessageBox.Show(string.Format("{0} Directory does not exist!", newFolderPathDecode));
             }
         }
-        
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (Directory.Exists(newFolderPath))
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    Arguments = newFolderPath,
+                    FileName = "explorer.exe"
+                };
+
+                Process.Start(startInfo);
+            }
+            else
+            {
+                MessageBox.Show(string.Format("{0} Directory does not exist!", newFolderPath));
+            }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            youtubeList.Items.Clear();
+            if (checkBox1.Checked)
+            {
+                youtubeText.Enabled = false;
+                youtubeGroup.Text = "Step 1: Add video files (first: part 1, second: part 2)";
+            } else
+            {
+                youtubeText.Enabled = true;
+                youtubeGroup.Text = "Step 1: Youtube links in order(first: part 1, second: part 2 and so on)";
+            }
+           
+
+        }
+
+        private void keyButton_Click(object sender, EventArgs e)
+        {
+            PasswordEncode.Text = Guid.NewGuid().ToString();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            System.Windows.Forms.Clipboard.SetText(PasswordEncode.Text);
+        }
 
         private void button4_Click(object sender, EventArgs e)
         {
