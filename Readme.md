@@ -6,7 +6,7 @@
 
 This repository is meant as a way for people to test it out. As you will see the coding is not very good, but I wanted to make sure people can trust the code and if they wish to improve upon this concept.
 
-![encoding ubuntu 22.04](https://raw.githubusercontent.com/Keksmania/FileToYoutube/d191b0677aaac9baeb045b76ff12b334729fe81a/FileToYoutube/ImageReadme.png?token=GHSAT0AAAAAACA3VLX5HZPEPEVTMNTJYGO6ZCFOG3Q)  
+![encoding ubuntu 22.04](https://github.com/Keksmania/FileToYoutube/blob/d191b0677aaac9baeb045b76ff12b334729fe81a/FileToYoutube/ImageReadme.png?raw=true)  
 
 WARNING: This app must not be used to distribute illegal files or shouldn’t be used to overwhelm YouTube servers. The TOS of YouTube clearly states uploading auto-generated videos is not allowed and your YouTube account could be terminated!
 
