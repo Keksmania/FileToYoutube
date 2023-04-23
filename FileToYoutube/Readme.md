@@ -14,11 +14,11 @@ WARNING: This app must not be used to distribute illegal files or shouldn’t be
 
 ## Some facts:
 
-The ratio to file to encoded video is between 1:15 and 1:20
+- The ratio to file to encoded video is between 1:15 and 1:20
 
-The ratio to file to downloaded video is between 1:10 and 1:15
+- The ratio to file to downloaded video is between 1:10 and 1:15
 
-The total size you will need on your hard drive is about 26x the size of your file (15x for video, 10x for generated images, and 1x for volume zip)
+- The total size you will need on your hard drive is about 26x the size of your file (15x for video, 10x for generated images, and 1x for volume zip)
 
   
 
