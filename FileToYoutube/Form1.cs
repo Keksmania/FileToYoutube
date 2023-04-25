@@ -16,6 +16,7 @@ using QRCoder;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 
 namespace FileToYoutube
 {
@@ -430,6 +431,8 @@ namespace FileToYoutube
             this.youtubeText.Enabled = !this.youtubeText.Enabled;
             this.button2.Enabled = !this.button2.Enabled;
             this.button5.Enabled = !this.button5.Enabled;
+            this.keyButton.Enabled = !this.keyButton.Enabled;
+            this.copyButton.Enabled = !this.copyButton.Enabled;
         }
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -502,7 +505,9 @@ namespace FileToYoutube
 
             string[] files = Directory.GetFiles(newFolderPath);
 
-           // infoLabel.Text = "turning volumes into images...";
+            Array.Sort(files, (a, b) => int.Parse(a.Split('.')[a.Split('.').Length - 1]) - int.Parse(b.Split('.')[b.Split('.').Length - 1])); // used to sort volumes by extension number
+
+            // infoLabel.Text = "turning volumes into images...";
 
             float stepSize = 50 / files.Length + 20;
 
@@ -881,6 +886,9 @@ namespace FileToYoutube
 
         private void button5_Click(object sender, EventArgs e)
         {
+
+
+
             if (Directory.Exists(newFolderPath))
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo
