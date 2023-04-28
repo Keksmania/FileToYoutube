@@ -433,6 +433,8 @@ namespace FileToYoutube
             this.button5.Enabled = !this.button5.Enabled;
             this.keyButton.Enabled = !this.keyButton.Enabled;
             this.copyButton.Enabled = !this.copyButton.Enabled;
+            this.checkBox1.Enabled = !this.checkBox1.Enabled;
+
         }
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -639,6 +641,7 @@ namespace FileToYoutube
                         catch
                         {
                             MessageBox.Show("Link is not a Youtube link or video is private or processing is not finished.", "Error", 0, MessageBoxIcon.Error);
+                            return;
                         }
                     } else
                     {
@@ -689,7 +692,7 @@ namespace FileToYoutube
 
                 backgroundWorker2.ReportProgress(50);
 
-                ffmpegCommand = $"-f concat -safe 0 -i \"{Path.Combine(bilderPathDecode, "write.txt")}\" -pix_fmt rgb24 -filter_complex \"tile=10x10\" -s {imageWidth * 10}x{imageHeight * 10}  -sws_flags neighbor \"{ Path.Combine(bilderPathDecode, $"filename%10d.png")}\"";
+                ffmpegCommand = $"-f concat -safe 0 -i \"{Path.Combine(bilderPathDecode, "write.txt")}\" -pix_fmt pal8 -filter_complex \"tile=10x10\" -s {imageWidth * 10}x{imageHeight * 10}  -sws_flags neighbor \"{ Path.Combine(bilderPathDecode, $"filename%10d.png")}\"";
                 Process process2 = new Process
                 {
                     StartInfo = new ProcessStartInfo

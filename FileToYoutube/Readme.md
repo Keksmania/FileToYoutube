@@ -4,7 +4,11 @@
 
   
 
-This repository is meant as a way for people to test it out. As you will see the coding is not very good, but I wanted to make sure people can trust the code and if they wish to improve upon this concept.
+This repository is meant as a way for people to test it out. I believe this should not be allowed and Youtube should detect these kinds of videos.
+
+As you will see the coding is not very good, but I wanted to make sure people can trust the code.
+
+I don't want people to waste a lot of electricity for nothing.  Try to keep files small. <3 
 
 ![encoding ubuntu 22.04](https://github.com/Keksmania/FileToYoutube/blob/d191b0677aaac9baeb045b76ff12b334729fe81a/FileToYoutube/ImageReadme.png?raw=true)  
 
@@ -14,13 +18,15 @@ WARNING: This app must not be used to distribute illegal files or shouldn’t be
 
 ## Some facts:
 
-- The ratio to file to encoded video is between 1:15 and 1:20
+- The ratio to file to encoded video is between 1:15 and 1:19
 
-- The ratio to file to downloaded video is between 1:10 and 1:15
+- The ratio to file to downloaded video is between 1:7
 
-- The total size you will need on your hard drive is about 26x the size of your file (15x for video, 10x for generated images, and 1x for volume zip)
+- The total size you will need on your hard drive for encoding is about 23.5x the size of your file (19x for the video, 3.5x for generated images, and 1x for the archive volumes)
 
+- The total size you will need on your hard drive for decoding is about 12x the size of your file (7x for the video, 4x for the generated images, and 1x for the archive volumes)
   
+- You will need about 5 hours to encode a 1 gb file on a 10th gen i5 CPU
 
 If that still sounds interesting here we go:
 
@@ -38,11 +44,9 @@ If that still sounds interesting here we go:
 
   
 
-3. video settings can be left unchanged. Videos shouldn’t be under 720p since the YouTube compression will make it impossible to recover files.
-
+3. video settings can be left unchanged. Videos shouldn’t be under 720p since the YouTube compression will make it impossible to recover files. 
   
-
-The frame rate was tested with 6, 24, 30, 60
+The frame rate was tested with 6, 24, 30
 
 It is possible that certain frame rates won’t work since YouTube will add frames and remove frames to match a favored frame rate.
 
@@ -82,27 +86,18 @@ There is an option where you can add the video files manually (by downloading a 
 
   
 
-- YoutubeExplode (used to download videos from YouTube)
+- [YoutubeExplode](https://github.com/Tyrrrz/YoutubeExplode) (used to download videos from YouTube)
 
-- QrCoder (used to encode bytes into qr codes)
+- [QrCoder](https://github.com/codebude/QRCoder) (used to encode bytes into qr codes)
 
-- QrCodeDecoderLibrary (used to decode qr codes)
+- [QrCodeDecoderLibrary](https://github.com/Uzi-Granot/QRCode) (used to decode qr codes)
 
-- 7zip (used to zip files into volumes before turning them into qr codes)
+- [7zip](https://github.com/mcmilk/7-Zip) (used to zip files into volumes before turning them into qr codes)
 
-- Ffmpeg (used to create a video out of images and the reverse)
-
-  
+- [Ffmpeg](https://github.com/FFmpeg/FFmpeg) (used to create a video out of images and the reverse)
 
   
 
-  
-
-If you wanna improve this project feel free to fork it. The project in this repo might stay or be changed by me.
-
-  
-
-  
 
 Copyright © 2023 Keksmania
 
