@@ -20,7 +20,7 @@ WARNING: This app must not be used to distribute illegal files or shouldn’t be
 
 - The ratio to file to encoded video is between 1:15 and 1:19
 
-- The ratio to zipped file to downloaded video is between 1:14
+- The ratio to zipped file to downloaded video is 1:14
 
 - The total size you will need on your hard drive for encoding is about 23.5x the size of your file (19x for the video, 3.5x for generated images, and 1x for the archive volumes)
 
@@ -71,7 +71,7 @@ It is possible that certain frame rates won’t work since YouTube will add fram
 
   
 
-6. Wait for the processing to finish. You can verify it by looking if the 720p option is appeared in YouTube.
+6. Wait for the processing to finish. You can verify it by looking if the 720p option has appeared in YouTube.
 
   
 
