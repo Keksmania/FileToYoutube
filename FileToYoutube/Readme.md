@@ -8,7 +8,7 @@ This repository is meant as a way for people to test it out. I believe this shou
 
 As you will see the coding is not very good, but I wanted to make sure people can trust the code.
 
-I don't want people to waste a lot of electricity for nothing.  Try to keep files small. <3 
+I don't want people to waste a lot of electricity for nothing.  Try to keep files small. <3  Also YouTube will throttle your download speed if you download too much data in a small period of time.
 
 ![encoding ubuntu 22.04](https://github.com/Keksmania/FileToYoutube/blob/d191b0677aaac9baeb045b76ff12b334729fe81a/FileToYoutube/ImageReadme.png?raw=true)  
 
@@ -20,17 +20,28 @@ WARNING: This app must not be used to distribute illegal files or shouldn’t be
 
 - The ratio to file to encoded video is between 1:15 and 1:19
 
-- The ratio to file to downloaded video is between 1:7
+- The ratio to zipped file to downloaded video is between 1:14
 
 - The total size you will need on your hard drive for encoding is about 23.5x the size of your file (19x for the video, 3.5x for generated images, and 1x for the archive volumes)
 
-- The total size you will need on your hard drive for decoding is about 12x the size of your file (7x for the video, 4x for the generated images, and 1x for the archive volumes)
+- The total size you will need on your hard drive for decoding is about 19x the size of your file (14x for the video, 4x for the generated images, and 1x for the archive volumes)
   
-- You will need about 5 hours to encode a 1 gb file on a 10th gen i5 CPU
+- You will need about 5 hours to encode a 1 gb file on a 10th gen i5 CPU with 6 hardware cores
+
+- Decoding is fast and the downloading of the video will depend on your internet speed
+
+
 
 If that still sounds interesting here we go:
 
-  
+## Requirements
+
+- Windows 7 or higher (was only tested on Windows 11)
+
+- .Net 4.8 runtime
+
+- Enough hard drive space
+
 
 ## How to use:
 
@@ -74,11 +85,11 @@ Since YouTube is only allowing videos under 12h the application will split video
 
 There is an option where you can add the video files manually (by downloading a private video for example)
 
-  
+Attention: "Youtube Short" videos that are directly downloaded form YouTube manually will have a water mark and won't work. Use the automatic downloader by adding the URL to the software to download the video without watermark
 
   
 
-  
+ 
 
 ### This application works in Windows and uses different libraries and applications…
 
