@@ -16,7 +16,7 @@ using QRCoder;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 using System.ComponentModel;
-using System.Text.RegularExpressions;
+
 
 namespace FileToYoutube
 {
