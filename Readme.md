@@ -40,6 +40,8 @@ If that still sounds interesting here we go:
 
 - .Net 4.8 runtime
 
+- C++ Runtime 
+
 - Enough hard drive space
 
 
