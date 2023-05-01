@@ -97,7 +97,7 @@ Attention: "Youtube Short" videos that are directly downloaded form YouTube manu
 
   
 
-- [YoutubeExplode](https://github.com/Tyrrrz/YoutubeExplode) (used to download videos from YouTube)
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) (used to download videos from YouTube)
 
 - [QrCoder](https://github.com/codebude/QRCoder) (used to encode bytes into qr codes)
 

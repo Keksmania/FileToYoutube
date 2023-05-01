@@ -13,8 +13,6 @@ using System.Threading.Tasks;
 using System.Drawing.Imaging;
 using QRCodeDecoderLibrary;
 using QRCoder;
-using YoutubeExplode;
-using YoutubeExplode.Videos.Streams;
 using System.ComponentModel;
 
 
@@ -250,6 +248,7 @@ namespace FileToYoutube
         //  const string ffmpegPath = @"C:\Users\Alper\Desktop\ffmpeg-5.1.2-full_build\bin\ffmpeg.exe"; // das muss mit im Programm included sein
         const string ffmpegPath = @"ffmpeg.exe"; // das muss mit im Programm included sein
         const string sevenZipPath = @"7z.exe"; // das muss mit im Programm included sein
+        const string ytdlpPath = @"yt-dlp_min.exe";
 
         private void clearAllFields()
         {
@@ -272,29 +271,50 @@ namespace FileToYoutube
 
         static  Dictionary<int, string> fileExtension = new Dictionary<int, string>();
 
-        static YoutubeClient youtube = new YoutubeClient();
 
-        private async Task downloadFile(string videoUrl, int videoId)
+        private void downloadFile(string videoUrl, int videoId)
         {
 
-            var streamManifest = await youtube.Videos.Streams.GetManifestAsync(videoUrl);
-            // ...or highest quality MP4 video-only stream
-            var streamInfo = streamManifest
-             .GetVideoOnlyStreams().TryGetWithHighestVideoQuality();
+            var stringdownloadFileCommand = $"-o {newFolderPathDecode}\\video{getName(videoId, 3)}.%(ext)s -f \"bestvideo[height>=720][ext=mp4]/bestvideo[height>=720]\" {videoUrl} --ignore-errors --update --no-overwrites --continue --verbose";
 
-            if(streamInfo == null)
+         
+            Process process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = ytdlpPath,
+                    Arguments = stringdownloadFileCommand,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+
+                }
+            };
+
+
+            process.Start();
+            var output = process.StandardOutput.ReadToEnd();
+            // write output to console
+            Console.WriteLine(output);
+            process.WaitForExit();
+
+
+
+
+
+
+            string[] fileNames = Directory.GetFiles(newFolderPathDecode, $"video{getName(videoId, 3)}.*");
+
+            if(fileNames.Length < 1)
             {
                 return;
             }
-            var stream = await youtube.Videos.Streams.GetAsync(streamInfo);
-
-            lock(fileExtension){
-                fileExtension.Add(videoId, streamInfo.Container.Name);
 
 
+
+            lock (fileExtension) {
+                fileExtension.Add(videoId, fileNames[0].Split('.')[fileNames[0].Split('.').Length-1]);
             }
-
-            await youtube.Videos.Streams.DownloadAsync(streamInfo, Path.Combine(newFolderPathDecode, $"video{ getName(videoId, 3)}.{streamInfo.Container}"));
 
         }
 
@@ -865,6 +885,8 @@ namespace FileToYoutube
 
         private void backgroundWorker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            progressBar2.Value = 100;
+            this.Refresh();
             toggleControls();
             clearAllFields();
         }
