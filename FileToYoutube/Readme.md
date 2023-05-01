@@ -38,9 +38,9 @@ If that still sounds interesting here we go:
 
 - Windows 7 or higher (was only tested on Windows 11)
 
-- .Net 4.8 runtime
+- .Net 4.8 runtime (https://dotnet.microsoft.com/en-us/download/dotnet-framework/thank-you/net48-web-installer)
 
-- C++ Runtime 
+- C++ Runtime (https://aka.ms/vs/17/release/vc_redist.x64.exe)
 
 - Enough hard drive space
 
