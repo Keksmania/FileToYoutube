@@ -110,7 +110,7 @@ namespace FileToYoutube
                     buffer = threadIndex.ToString().Length;
                 }
 
-                File.WriteAllText(Path.Combine(workPath, "myZip.zip." + getName(threadIndex, buffer)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
+                File.WriteAllText(Path.Combine(workPath, "myZip.7z." + getName(threadIndex, buffer)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
                 sb1.Clear();
             }
 
@@ -711,9 +711,9 @@ namespace FileToYoutube
                 File.WriteAllText(Path.Combine(bilderPathDecode, "write.txt"), sbc.ToString());
 
                 backgroundWorker2.ReportProgress(50);
-                  ffmpegCommand = $"-f concat -safe 0 -i \"{Path.Combine(bilderPathDecode, "write.txt")}\" -pix_fmt rgb24 -filter_complex \"tile=10x10\" -s {imageWidth * 10}x{imageHeight * 10}  -sws_flags neighbor \"{ Path.Combine(bilderPathDecode, $"filename%10d.png")}\"";
+               //   ffmpegCommand = $"-f concat -safe 0 -i \"{Path.Combine(bilderPathDecode, "write.txt")}\" -pix_fmt rgb24 -filter_complex \"tile=10x10\" -s {imageWidth * 10}x{imageHeight * 10}  -sws_flags neighbor \"{ Path.Combine(bilderPathDecode, $"filename%10d.png")}\"";
 
-                //  ffmpegCommand = $"-f concat -safe 0 -i \"{Path.Combine(bilderPathDecode, "write.txt")}\" -pix_fmt pal8 -filter_complex \"tile=10x10\" -s {imageWidth * 10}x{imageHeight * 10}  -sws_flags neighbor \"{ Path.Combine(bilderPathDecode, $"filename%10d.png")}\"";
+                ffmpegCommand = $"-f concat -safe 0 -i \"{Path.Combine(bilderPathDecode, "write.txt")}\" -pix_fmt pal8 -filter_complex \"tile=10x10\" -s {imageWidth * 10}x{imageHeight * 10}  -sws_flags neighbor \"{ Path.Combine(bilderPathDecode, $"filename%10d.png")}\"";
                 Process process2 = new Process
                 {
                     StartInfo = new ProcessStartInfo
