@@ -850,7 +850,7 @@ namespace FileToYoutube
             }
 
             // The command to run 7-Zip
-            string sevenZipCommand = $"x -spf -y -o\"{newFolderPathDecode}\" \"{Path.Combine(newFolderPathDecode, "myZip")}.zip.*\"{password}";
+            string sevenZipCommand = $"x -spf -y -o\"{newFolderPathDecode}\" \"{Path.Combine(newFolderPathDecode, "myZip")}.7z.*\"{password}";
 
 
 
