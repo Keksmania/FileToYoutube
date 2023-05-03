@@ -275,7 +275,7 @@ namespace FileToYoutube
         private void downloadFile(string videoUrl, int videoId)
         {
 
-            var stringdownloadFileCommand = $"-o {newFolderPathDecode}\\video{getName(videoId, 3)}.%(ext)s -f \"bestvideo[height>=720][ext=mp4]/bestvideo[height>=720]\" {videoUrl} --ignore-errors --update --no-overwrites --continue --verbose --no-check-certificate";
+            var stringdownloadFileCommand = $"-o \"{newFolderPathDecode}\\video{getName(videoId, 3)}.%(ext)s\" -f \"bestvideo[height>=720][ext=mp4]/bestvideo[height>=720]\" {videoUrl} --ignore-errors --update --no-overwrites --continue --verbose --no-check-certificate";
 
          
             Process process = new Process
