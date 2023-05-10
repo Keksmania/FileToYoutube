@@ -138,7 +138,7 @@ namespace FileToYoutube
 
             int counter = 0;
             int realNameIndex = 0;
-            int jumpWidth = 2953; //1273
+            int jumpWidth = 2953; //1744; //2953; //1273
             int x = 0;
             int y = 0;
 
@@ -153,14 +153,14 @@ namespace FileToYoutube
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode(binaryFile.Substring(i, jumpWidth), QRCodeGenerator.ECCLevel.L);
                 QRCode qrCode = new QRCode(qrCodeData);
                 qrCodeImage = qrCode.GetGraphic(1);
-                if (qrCodeImage.Width != 185)
+                if (qrCodeImage.Width != imageWidth)
                 {
-                    Bitmap temp = new Bitmap(185, 185);
+                    Bitmap temp = new Bitmap(imageWidth, imageHeight);
 
                     using (Graphics gg = Graphics.FromImage(temp)) { 
                         gg.Clear(Color.White);
-                        int top = (185 - qrCodeImage.Height) / 2;
-                        int left = (185 - qrCodeImage.Width) / 2;
+                        int top = (imageHeight - qrCodeImage.Height) / 2;
+                        int left = (imageWidth - qrCodeImage.Width) / 2;
                         gg.DrawImage(qrCodeImage, left, top);
                     }
                     qrCodeImage = temp;
@@ -461,7 +461,7 @@ namespace FileToYoutube
         {
             if (!Directory.Exists(newFolderPath) || !Directory.Exists(bilderPath) || !File.Exists(filePath))
             {
-                infoLabel.Text = "Make sure that the folder and file are selected";
+              
                 return;
             }
 
@@ -484,14 +484,14 @@ namespace FileToYoutube
 
             volumeSize = (int)(fileSize / (100*Environment.ProcessorCount) / 1024);
 
-
+           // volumeSize = 285; // by doing this we can void creating empty frames by fitting exactly one volume file into 1 image file containing 100 frames
 
             if (volumeSize < 285)
-            {
+             {
                 volumeSize = 285;
             }
             else if (volumeSize > 2850)
-            {
+             {
                 volumeSize = 2850; 
             }
 
@@ -600,7 +600,7 @@ namespace FileToYoutube
 
             // make video out of images for each volume
 
-            string ffmpegCommand = $"-r {(int)fpsNumber.Value}/100 -f concat -safe 0  -i \"{Path.Combine(bilderPath, "WriteLines.txt")}\" -y -c:v libx264 -an -preset faster -movflags faststart -bf 2 -crf 30 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -map 0 -segment_time {timeCut} -f segment -reset_timestamps 1 -ignore_editlist 1 -filter:v {'"'}untile=10x10 , format=yuv420p{'"'} -force_key_frames {time.TotalSeconds} \"{Path.Combine(newFolderPath, "output%03d.mp4")}\"";
+            string ffmpegCommand = $"-r {(int)fpsNumber.Value}/100 -f concat -safe 0  -i \"{Path.Combine(bilderPath, "WriteLines.txt")}\" -y -c:v libx264 -an -movflags faststart -bf 2 -crf 27 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -sws_dither none -map 0 -segment_time {timeCut} -f segment -reset_timestamps 1 -ignore_editlist 1 -filter:v {'"'}untile=10x10 , format=yuv420p{'"'} -force_key_frames {time.TotalSeconds} \"{Path.Combine(newFolderPath, "output%03d.mp4")}\"";
 
 
             Process process2 = new Process
@@ -713,7 +713,7 @@ namespace FileToYoutube
                 backgroundWorker2.ReportProgress(50);
                //   ffmpegCommand = $"-f concat -safe 0 -i \"{Path.Combine(bilderPathDecode, "write.txt")}\" -pix_fmt rgb24 -filter_complex \"tile=10x10\" -s {imageWidth * 10}x{imageHeight * 10}  -sws_flags neighbor \"{ Path.Combine(bilderPathDecode, $"filename%10d.png")}\"";
 
-                ffmpegCommand = $"-f concat -safe 0 -i \"{Path.Combine(bilderPathDecode, "write.txt")}\" -pix_fmt pal8 -filter_complex \"tile=10x10\" -s {imageWidth * 10}x{imageHeight * 10}  -sws_flags neighbor \"{ Path.Combine(bilderPathDecode, $"filename%10d.png")}\"";
+                ffmpegCommand = $"-f concat -safe 0 -i \"{Path.Combine(bilderPathDecode, "write.txt")}\" -pix_fmt pal8 -filter_complex \"tile=10x10\" -s {imageWidth * 10}x{imageHeight * 10}  -sws_flags neighbor -sws_dither none \"{ Path.Combine(bilderPathDecode, $"filename%10d.png")}\"";
                 Process process2 = new Process
                 {
                     StartInfo = new ProcessStartInfo
