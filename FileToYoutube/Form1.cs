@@ -249,6 +249,7 @@ namespace FileToYoutube
         const string ffmpegPath = @"ffmpeg.exe"; // das muss mit im Programm included sein
         const string sevenZipPath = @"7z.exe"; // das muss mit im Programm included sein
         const string ytdlpPath = @"yt-dlp_min.exe";
+        const string par2Path = @"par2.exe";
 
         private void clearAllFields()
         {
@@ -525,9 +526,34 @@ namespace FileToYoutube
             backgroundWorker1.ReportProgress(10);
             Console.WriteLine("File split complete.");
 
+
+            //----- create par2 files
+            string par2Command = $"c -r10 -n1 x *.*";
+
+            Process processX = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = par2Path,
+                    Arguments = par2Command,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WorkingDirectory = newFolderPath
+                }
+            };
+            processX.Start();
+            var output = processX.StandardOutput.ReadToEnd();
+            // write output to console
+            Console.WriteLine(output);
+            processX.WaitForExit();
+
+            backgroundWorker1.ReportProgress(20);
+            //--- create par2 files 
+
             string[] files = Directory.GetFiles(newFolderPath);
 
-            Array.Sort(files, (a, b) => int.Parse(a.Split('.')[a.Split('.').Length - 1]) - int.Parse(b.Split('.')[b.Split('.').Length - 1])); // used to sort volumes by extension number
+            Array.Sort(files, (a, b) => (a.Split('.')[0] == Path.Combine(newFolderPath, "x") || b.Split('.')[0] == Path.Combine(newFolderPath,"x")) ? -1: int.Parse(a.Split('.')[a.Split('.').Length - 1]) - int.Parse(b.Split('.')[b.Split('.').Length - 1])); // used to sort volumes by extension number
 
             // infoLabel.Text = "turning volumes into images...";
 
