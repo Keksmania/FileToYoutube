@@ -105,12 +105,24 @@ namespace FileToYoutube
             if(sb1.Length > 0) {
 
                 int buffer = 3;
-                if(threadIndex > 999)
+                if(threadIndex > 999+2) // +2 for the par2 files 
                 {
                     buffer = threadIndex.ToString().Length;
                 }
 
-                File.WriteAllText(Path.Combine(workPath, "myZip.7z." + getName(threadIndex, buffer)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
+                if(threadIndex == 0)
+                {
+                    File.WriteAllText(Path.Combine(workPath, "x.par2"), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
+
+                } else if(threadIndex == 1)
+                {
+                    File.WriteAllText(Path.Combine(workPath, "x.vol000.par2"), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
+                } else
+                {
+                    File.WriteAllText(Path.Combine(workPath, "myZip.7z." + getName(threadIndex-1, buffer)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
+                }
+
+              
                 sb1.Clear();
             }
 
@@ -507,7 +519,7 @@ namespace FileToYoutube
             }
 
             // The command to run 7-Zip
-            string sevenZipCommand = $"a -v{volumeSize}k -t7z " + '"' + Path.Combine(newFolderPath, Path.GetFileNameWithoutExtension(filePath)) + ".7z" + "\" \"" + filePath + $"\"{password}";
+            string sevenZipCommand = $"a -v{volumeSize}k -t7z " + '"' + Path.Combine(newFolderPath,"myZip") + ".7z" + "\" \"" + filePath + $"\"{password}";
 
             // Start 7-Zip
             Process process = new Process
@@ -526,6 +538,8 @@ namespace FileToYoutube
             backgroundWorker1.ReportProgress(10);
             Console.WriteLine("File split complete.");
 
+            string[] files = Directory.GetFiles(newFolderPath);
+            Array.Sort(files, (a, b) => int.Parse(a.Split('.')[a.Split('.').Length - 1]) - int.Parse(b.Split('.')[b.Split('.').Length - 1])); // used to sort volumes by extension number
 
             //----- create par2 files
             string par2Command = $"c -r10 -n1 x *.*";
@@ -551,22 +565,34 @@ namespace FileToYoutube
             backgroundWorker1.ReportProgress(20);
             //--- create par2 files 
 
-            string[] files = Directory.GetFiles(newFolderPath);
 
-            Array.Sort(files, (a, b) => (a.Split('.')[0] == Path.Combine(newFolderPath, "x") || b.Split('.')[0] == Path.Combine(newFolderPath,"x")) ? -1: int.Parse(a.Split('.')[a.Split('.').Length - 1]) - int.Parse(b.Split('.')[b.Split('.').Length - 1])); // used to sort volumes by extension number
+            string[] vo000 = Directory.GetFiles(newFolderPath,"x.vol000*");
+
 
             // infoLabel.Text = "turning volumes into images...";
 
-            float stepSize = 50 / files.Length + 20;
+            float stepSize = 50 / (files.Length+2) + 20;
 
             int lastI = 0;
             List<Thread> threads = new List<Thread>();
-            for (int i = 0; i < files.Length; i++)
+            for (int i = 0; i < files.Length+2; i++)
             {
 
                 int index = i;
 
-                Thread t = new Thread(() => TurnFileToImages(File.ReadAllText(files[index], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath));
+                Thread t;
+                if (index == 0)
+                {
+                    t = new Thread(() => TurnFileToImages(File.ReadAllText(Path.Combine(newFolderPath,"x.par2"), Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath));
+                } else if(index == 1)
+                {
+                    t = new Thread(() => TurnFileToImages(File.ReadAllText(vo000[0], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath));
+                } else
+                {
+                    t =  new Thread(() => TurnFileToImages(File.ReadAllText(files[index-2], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath));
+                }
+                
+              
                 t.Start();
                 threads.Add(t);
 
@@ -626,7 +652,7 @@ namespace FileToYoutube
 
             // make video out of images for each volume
 
-            string ffmpegCommand = $"-r {(int)fpsNumber.Value}/100 -f concat -safe 0  -i \"{Path.Combine(bilderPath, "WriteLines.txt")}\" -y -c:v libx264 -an -movflags faststart -bf 2 -crf 27 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -sws_dither none -map 0 -segment_time {timeCut} -f segment -reset_timestamps 1 -ignore_editlist 1 -filter:v {'"'}untile=10x10 , format=yuv420p{'"'} -force_key_frames {time.TotalSeconds} \"{Path.Combine(newFolderPath, "output%03d.mp4")}\"";
+            string ffmpegCommand = $"-r {(int)fpsNumber.Value}/100 -f concat -safe 0  -i \"{Path.Combine(bilderPath, "WriteLines.txt")}\" -y -c:v libx264 -an -movflags faststart -bf 2 -crf 34 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -sws_dither none -map 0 -segment_time {timeCut} -f segment -reset_timestamps 1 -ignore_editlist 1 -filter:v {'"'}untile=10x10 , format=yuv420p{'"'} -force_key_frames {time.TotalSeconds} \"{Path.Combine(newFolderPath, "output%03d.mp4")}\"";
 
 
             Process process2 = new Process
@@ -866,7 +892,29 @@ namespace FileToYoutube
                 t.Wait();
             }
 
-            backgroundWorker2.ReportProgress(90);
+            backgroundWorker2.ReportProgress(85);
+
+
+            //----- create par2 files
+            string par2Command = $"r x *.*";
+
+            Process processX = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = par2Path,
+                    Arguments = par2Command,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WorkingDirectory = newFolderPathDecode
+                }
+            };
+            processX.Start();
+            var output = processX.StandardOutput.ReadToEnd();
+            // write output to console
+
+            backgroundWorker2.ReportProgress(95);
 
             string password = this.PasswordDecode.Text;
 
