@@ -14,14 +14,18 @@ using System.Drawing.Imaging;
 using QRCodeDecoderLibrary;
 using QRCoder;
 using System.ComponentModel;
-
+using System.Runtime.InteropServices;
 
 namespace FileToYoutube
 {
 
     public partial class Form1 : Form
     {
-
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        static extern uint SetThreadExecutionState(uint esFlags);
+        public const uint ES_SYSTEM_REQUIRED = 0x00000001;
+        public const uint ES_DISPLAY_REQUIRED = 0x00000002;
+        public const uint ES_CONTINUOUS = 0x80000000;
 
 
         static QRCodeGenerator qrGenerator = new QRCodeGenerator();
@@ -105,7 +109,7 @@ namespace FileToYoutube
             if(sb1.Length > 0) {
 
                 int buffer = 3;
-                if(threadIndex > 999+2) // +2 for the par2 files 
+                if(threadIndex > 999+6) // +6 for the par2 files 
                 {
                     buffer = threadIndex.ToString().Length;
                 }
@@ -114,9 +118,9 @@ namespace FileToYoutube
                 {
                     File.WriteAllText(Path.Combine(workPath, "x.par2"), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
 
-                } else if(threadIndex == 1)
+                } else if(threadIndex < 6)
                 {
-                    File.WriteAllText(Path.Combine(workPath, "x.vol000.par2"), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
+                    File.WriteAllText(Path.Combine(workPath, $"x.vol{getName(threadIndex,3)}.par2"), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
                 } else
                 {
                     File.WriteAllText(Path.Combine(workPath, "myZip.7z." + getName(threadIndex-1, buffer)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
@@ -478,6 +482,7 @@ namespace FileToYoutube
                 return;
             }
 
+            SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED);
             myNames.Clear();
           
 
@@ -536,13 +541,14 @@ namespace FileToYoutube
             process.Start();
             process.WaitForExit();
             backgroundWorker1.ReportProgress(10);
+          
             Console.WriteLine("File split complete.");
 
             string[] files = Directory.GetFiles(newFolderPath);
             Array.Sort(files, (a, b) => int.Parse(a.Split('.')[a.Split('.').Length - 1]) - int.Parse(b.Split('.')[b.Split('.').Length - 1])); // used to sort volumes by extension number
 
             //----- create par2 files
-            string par2Command = $"c -r10 -n1 x *.*";
+            string par2Command = $"c -r2 -n5 x *.*";
 
             Process processX = new Process
             {
@@ -566,55 +572,72 @@ namespace FileToYoutube
             //--- create par2 files 
 
 
-            string[] vo000 = Directory.GetFiles(newFolderPath,"x.vol000*");
+            string[] vol = Directory.GetFiles(newFolderPath,"x.vol*");
 
 
             // infoLabel.Text = "turning volumes into images...";
 
-            float stepSize = 50 / (files.Length+2) + 20;
+            ThreadPool.SetMaxThreads(Environment.ProcessorCount+3, 1);
+            int taskCount = files.Length + 6;
+            CountdownEvent countdown = new CountdownEvent(taskCount);
+
+            float stepSize = 50 / (files.Length+6) + 20;
 
             int lastI = 0;
             List<Thread> threads = new List<Thread>();
-            for (int i = 0; i < files.Length+2; i++)
+            for (int i = 0; i < taskCount; i++)
             {
 
                 int index = i;
 
-                Thread t;
-                if (index == 0)
+                ThreadPool.QueueUserWorkItem(state =>
                 {
-                    t = new Thread(() => TurnFileToImages(File.ReadAllText(Path.Combine(newFolderPath,"x.par2"), Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath));
-                } else if(index == 1)
-                {
-                    t = new Thread(() => TurnFileToImages(File.ReadAllText(vo000[0], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath));
-                } else
-                {
-                    t =  new Thread(() => TurnFileToImages(File.ReadAllText(files[index-2], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath));
-                }
-                
-              
-                t.Start();
-                threads.Add(t);
+                    // Do some work here
 
-                if ((i % (Environment.ProcessorCount + 1) == 0))
-                {     // if threads =
-                    for (int ii = lastI + 1; ii < i + 1; ii++)
+                    if (index == 0)
                     {
-                        threads[ii].Join();
-
-                      
+                       TurnFileToImages(File.ReadAllText(Path.Combine(newFolderPath, "x.par2"), Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath);
+                    }
+                    else if (index < 6)
+                    {
+                       TurnFileToImages(File.ReadAllText(vol[index - 1], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath);
+                    }
+                    else
+                    {
+                      TurnFileToImages(File.ReadAllText(files[index - 6], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath);
                     }
 
-                    lastI = i;
-                }
+                    // Signal that the task is done
+                    SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED);
+                    countdown.Signal();
+                });
+
+
+              //  Thread t;
+               
+
+                //   t.Start();
+                //  threads.Add(t);
+
+                //    if ((i % (Environment.ProcessorCount + 1) == 0))
+                //     {     // if threads =
+                //     for (int ii = lastI + 1; ii < i + 1; ii++)
+                //   {
+                // threads[ii].Join();
+
+
+                // }
+
+                //  lastI = i;
+                //  }
                 // }
 
             }
-            foreach (Thread t in threads)
-            {
-                t.Join();
-            }
-
+            //  foreach (Thread t in threads)
+            //  {
+            //  t.Join();
+            // }
+            countdown.Wait();
 
             StringBuilder myStringBuilder = new StringBuilder();
 
@@ -744,6 +767,8 @@ namespace FileToYoutube
                 }
                 // if (videoId > 1) {
 
+                SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED);
+
                 StringBuilder sbc = new StringBuilder();
                 for (int i = 0; i < videoId; i++)
                 {
@@ -761,6 +786,8 @@ namespace FileToYoutube
 
                 }
                 File.WriteAllText(Path.Combine(bilderPathDecode, "write.txt"), sbc.ToString());
+
+                SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED);
 
                 backgroundWorker2.ReportProgress(50);
                //   ffmpegCommand = $"-f concat -safe 0 -i \"{Path.Combine(bilderPathDecode, "write.txt")}\" -pix_fmt rgb24 -filter_complex \"tile=10x10\" -s {imageWidth * 10}x{imageHeight * 10}  -sws_flags neighbor \"{ Path.Combine(bilderPathDecode, $"filename%10d.png")}\"";
