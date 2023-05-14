@@ -42,8 +42,7 @@ namespace FileToYoutube
             QRDecoder Decoder = new QRDecoder();
             byte[][] ResultArray;
 
-            int test = 0;
-            
+
             for (int z = filesToRecover[threadIndex][0]; z <= filesToRecover[threadIndex][2]; z++) // main Images
             {
                 using (Image large = Bitmap.FromFile(imageFiles[z]))
@@ -167,7 +166,7 @@ namespace FileToYoutube
 
             int counter = 0;
             int realNameIndex = 0;
-            int jumpWidth = 2953;//1300; //2953; //1744; //2953; //1273
+            int jumpWidth = 2953;
             int x = 0;
             int y = 0;
 
@@ -244,7 +243,7 @@ namespace FileToYoutube
                 }
     
                 g.DrawImage(qrCodeImage, x*imageWidth, y*imageHeight);
-              //  qrCodeImage.Save(Path.Combine(bilderPath, $@"{Guid.NewGuid()}.png"));         
+     
 
                 x++;
                 if(x >= 10)
@@ -672,30 +671,10 @@ namespace FileToYoutube
                 });
 
 
-              //  Thread t;
-               
 
-                //   t.Start();
-                //  threads.Add(t);
-
-                //    if ((i % (Environment.ProcessorCount + 1) == 0))
-                //     {     // if threads =
-                //     for (int ii = lastI + 1; ii < i + 1; ii++)
-                //   {
-                // threads[ii].Join();
-
-
-                // }
-
-                //  lastI = i;
-                //  }
-                // }
 
             }
-            //  foreach (Thread t in threads)
-            //  {
-            //  t.Join();
-            // }
+
             countdown.Wait();
 
             StringBuilder myStringBuilder = new StringBuilder();
@@ -771,7 +750,6 @@ namespace FileToYoutube
         {
             toggleControls();
             clearAllFields();
-        //    backgroundWorker1.
 
         }
 
@@ -1183,20 +1161,14 @@ namespace FileToYoutube
                     string folderPath = folderBrowserDialog.SelectedPath;
                     Console.WriteLine("Selected folder: " + folderPath);
 
-                    //string folderName = "Work";
-                    //    newFolderPath = Path.Combine(folderPath, folderName);
+
                     newFolderPath = folderPath;
-                    // if (!Directory.Exists(newFolderPath))
-                    // {
+
                     Directory.CreateDirectory(newFolderPath);
                     bilderPath = Path.Combine(newFolderPath, "Images");
                     Directory.CreateDirectory(bilderPath);
                     Console.WriteLine("Folder created: " + newFolderPath);
-                    //   }
-                    //   else
-                    //   {
-                    //     Console.WriteLine("Folder already exists: " + newFolderPath);
-                    //   }
+
                     textBox2.Text = newFolderPath;
                     textBox2.Refresh();
                 }
@@ -1227,21 +1199,12 @@ namespace FileToYoutube
                 if (1 > testVar.Length) { 
                 string folderPath = folderBrowserDialog.SelectedPath;
                 Console.WriteLine("Selected folder: " + folderPath);
-
-                //  string folderName = "Work";
-                //  newFolderPathDecode = Path.Combine(folderPath, folderName);
                 newFolderPathDecode = folderPath;
-               // if (!Directory.Exists(newFolderPathDecode))
-               // {
+
                     Directory.CreateDirectory(newFolderPathDecode);
                     bilderPathDecode = Path.Combine(newFolderPathDecode, "Images");
                     Directory.CreateDirectory(bilderPathDecode);
                     Console.WriteLine("Folder created: " + newFolderPathDecode);
-                // }
-                // else
-                // {
-                //    Console.WriteLine("Folder already exists: " + newFolderPathDecode);
-                //}
 
                 
                 textBox4.Text = newFolderPathDecode;
