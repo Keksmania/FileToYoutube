@@ -12,9 +12,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Drawing.Imaging;
 using QRCodeDecoderLibrary;
-using QRCoder;
+//using QRCoder;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using Net.Codecrete.QrCodeGenerator;
 
 namespace FileToYoutube
 {
@@ -28,7 +29,7 @@ namespace FileToYoutube
         public const uint ES_CONTINUOUS = 0x80000000;
 
 
-        static QRCodeGenerator qrGenerator = new QRCodeGenerator();
+       // static QRCodeGenerator qrGenerator = new QRCodeGenerator();
 
         static Dictionary<int, int> myNames = new Dictionary<int, int>();
         static Dictionary<int, int[]> filesToRecover = new Dictionary<int, int[]>();
@@ -132,11 +133,23 @@ namespace FileToYoutube
 
         }
 
-        static void TurnFileToImages(string binaryFile, int imageWidth, int imageHeight, int threadIndex, string bilderPath)
+        private static byte[] ArraySegmentToArray(ArraySegment<byte> segment)
+        {
+            var result = new byte[segment.Count];
+            for (int i = 0; i < segment.Count; i++)
+            {
+                result[i] = segment.Array[i + segment.Offset];
+            }
+            return result;
+        }
+
+        static void TurnFileToImages(Byte[] binaryFile, int imageWidth, int imageHeight, int threadIndex, string bilderPath)
         {
 
 
-            Bitmap hugeBitmap = new Bitmap(imageWidth * 10, imageHeight * 10);
+            Bitmap hugeBitmap = new Bitmap(imageWidth * 10, imageHeight * 10, PixelFormat.Format32bppArgb);
+
+
             Graphics g = Graphics.FromImage(hugeBitmap);
 
             using (SolidBrush brush = new SolidBrush(Color.Black))
@@ -154,22 +167,66 @@ namespace FileToYoutube
 
             int counter = 0;
             int realNameIndex = 0;
-            int jumpWidth = 2953; //1744; //2953; //1273
+            int jumpWidth = 2953;//1300; //2953; //1744; //2953; //1273
             int x = 0;
             int y = 0;
 
-            Bitmap qrCodeImage = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+           
+        
+
             for (int i = 0; i < binaryFile.Length; i += jumpWidth)
             {
                 if (i + jumpWidth > binaryFile.Length)
                 {
                     jumpWidth = binaryFile.Length - i;
                 }
+                ArraySegment<byte> result = new ArraySegment<byte>(binaryFile, i, jumpWidth);
 
-                QRCodeData qrCodeData = qrGenerator.CreateQrCode(binaryFile.Substring(i, jumpWidth), QRCodeGenerator.ECCLevel.L);
-                QRCode qrCode = new QRCode(qrCodeData);
-                qrCodeImage = qrCode.GetGraphic(1);
-                if (qrCodeImage.Width != imageWidth)
+               
+                var qr = QrCode.EncodeBinary(ArraySegmentToArray(result), QrCode.Ecc.Low);
+
+                Bitmap qrCodeImage = new Bitmap(qr.Size, qr.Size, PixelFormat.Format1bppIndexed);
+
+                BitmapData bitmapData = qrCodeImage.LockBits(new Rectangle(0, 0, qr.Size, qr.Size), ImageLockMode.WriteOnly, PixelFormat.Format1bppIndexed);
+
+
+
+                IntPtr ptr = bitmapData.Scan0;
+                int bytes = Math.Abs(bitmapData.Stride) * qr.Size;
+
+                byte[] rgbValues = new byte[bytes];
+
+
+
+
+
+                for (int ii = 0; ii < qr.Size; ii++)
+                {
+                    for (int iii = 0; iii < qr.Size; iii++)
+                    {
+                        int byteIndex = ii / 8 + iii * bitmapData.Stride;
+                        int bitIndex = ii % 8;
+
+                        if (!qr.GetModule(ii, iii))
+                        {
+                            rgbValues[byteIndex] |= (byte)(1 << (7 - bitIndex)); 
+                        } else
+                        {
+                            rgbValues[byteIndex] &= (byte)~(1 << (7 - bitIndex));
+                        }
+
+
+
+                    }
+                }
+
+                System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
+                qrCodeImage.UnlockBits(bitmapData);
+                
+
+
+             //   qrCodeImage =  qr.; 
+                if (qr.Size != imageWidth)
                 {
                     Bitmap temp = new Bitmap(imageWidth, imageHeight);
 
@@ -198,6 +255,8 @@ namespace FileToYoutube
                 counter++;
                 if (counter % 100 == 0)
                 {
+                    
+                    
                     hugeBitmap.Save(Path.Combine(bilderPath, getName(threadIndex, 6) + getName(realNameIndex, 17) + ".png"), ImageFormat.Png);
                     y = 0;
                     x = 0;
@@ -229,7 +288,7 @@ namespace FileToYoutube
 
             hugeBitmap.Save(Path.Combine(bilderPath, getName(threadIndex, 6) + getName(realNameIndex, 17) + ".png"), ImageFormat.Png);
             hugeBitmap.Dispose();
-            qrCodeImage.Dispose();
+           
             realNameIndex++;
 
             lock (myNames)
@@ -256,8 +315,8 @@ namespace FileToYoutube
             InitializeComponent();
         }
 
-        const int imageWidth = 185;
-        const int imageHeight = 185;
+        const int imageWidth = 177;
+        const int imageHeight = 177;
 
         const int bitWidth = 1;
         string filePath = "", newFolderPath = "", bilderPath = "", filePathDecode = "", newFolderPathDecode = "", bilderPathDecode = "";
@@ -270,9 +329,9 @@ namespace FileToYoutube
         private void clearAllFields()
         {
             this.PasswordDecode.Text = "";
-            this.PasswordEncode.Text = "";
+            //this.PasswordEncode.Text = "";
             youtubeList.Items.Clear();
-            textBox1.Text = "";
+            //textBox1.Text = "";
             this.Refresh();
         }
 
@@ -476,9 +535,9 @@ namespace FileToYoutube
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            if (!Directory.Exists(newFolderPath) || !Directory.Exists(bilderPath) || !File.Exists(filePath))
+            if ( !Directory.Exists(newFolderPath) || !Directory.Exists(bilderPath) || !File.Exists(filePath))
             {
-              
+                MessageBox.Show("Please select all requied folders and files!", "Error", 0, MessageBoxIcon.Error);
                 return;
             }
 
@@ -548,7 +607,7 @@ namespace FileToYoutube
             Array.Sort(files, (a, b) => int.Parse(a.Split('.')[a.Split('.').Length - 1]) - int.Parse(b.Split('.')[b.Split('.').Length - 1])); // used to sort volumes by extension number
 
             //----- create par2 files
-            string par2Command = $"c -r2 -n5 x *.*";
+            string par2Command = $"c -r10 -n5 x *.*";
 
             Process processX = new Process
             {
@@ -596,15 +655,15 @@ namespace FileToYoutube
 
                     if (index == 0)
                     {
-                       TurnFileToImages(File.ReadAllText(Path.Combine(newFolderPath, "x.par2"), Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath);
+                       TurnFileToImages(File.ReadAllBytes(Path.Combine(newFolderPath, "x.par2")), imageWidth, imageHeight, index, bilderPath);
                     }
                     else if (index < 6)
                     {
-                       TurnFileToImages(File.ReadAllText(vol[index - 1], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath);
+                       TurnFileToImages(File.ReadAllBytes(vol[index - 1]), imageWidth, imageHeight, index, bilderPath);
                     }
                     else
                     {
-                      TurnFileToImages(File.ReadAllText(files[index - 6], Encoding.GetEncoding("ISO-8859-1")), imageWidth, imageHeight, index, bilderPath);
+                      TurnFileToImages(File.ReadAllBytes(files[index - 6]), imageWidth, imageHeight, index, bilderPath);
                     }
 
                     // Signal that the task is done
@@ -675,7 +734,7 @@ namespace FileToYoutube
 
             // make video out of images for each volume
 
-            string ffmpegCommand = $"-r {(int)fpsNumber.Value}/100 -f concat -safe 0  -i \"{Path.Combine(bilderPath, "WriteLines.txt")}\" -y -c:v libx264 -an -movflags faststart -bf 2 -crf 34 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -sws_dither none -map 0 -segment_time {timeCut} -f segment -reset_timestamps 1 -ignore_editlist 1 -filter:v {'"'}untile=10x10 , format=yuv420p{'"'} -force_key_frames {time.TotalSeconds} \"{Path.Combine(newFolderPath, "output%03d.mp4")}\"";
+            string ffmpegCommand = $"-r {(int)fpsNumber.Value}/100 -f concat -safe 0  -i \"{Path.Combine(bilderPath, "WriteLines.txt")}\" -y -c:v libx264 -an -movflags faststart -bf 2 -crf 32 -s {(int)videoWidthNumber.Value}:{(int)videoHeightNumber.Value} -sws_flags neighbor -sws_dither none -map 0 -segment_time {timeCut} -f segment -reset_timestamps 1 -ignore_editlist 1 -filter:v {'"'}untile=10x10 , format=yuv420p{'"'} -force_key_frames {time.TotalSeconds} \"{Path.Combine(newFolderPath, "output%03d.mp4")}\"";
 
 
             Process process2 = new Process
@@ -718,6 +777,13 @@ namespace FileToYoutube
 
         private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
         {
+
+            if (!Directory.Exists(newFolderPathDecode) || !Directory.Exists(bilderPathDecode))
+            {
+                MessageBox.Show("Please select all requied folders and files!", "Error", 0, MessageBoxIcon.Error);
+                return;
+            }
+
             bool youtubeDownloadBool = youtubeList.Items.Count > 0;
 
             
@@ -923,7 +989,7 @@ namespace FileToYoutube
 
 
             //----- create par2 files
-            string par2Command = $"r x *.*";
+            string par2Command = $"r -N x *.*";
 
             Process processX = new Process
             {
@@ -1055,7 +1121,9 @@ namespace FileToYoutube
 
         private void button6_Click(object sender, EventArgs e)
         {
+            if(PasswordEncode.Text.Length > 0) { 
             System.Windows.Forms.Clipboard.SetText(PasswordEncode.Text);
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
