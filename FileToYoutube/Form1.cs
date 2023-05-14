@@ -606,7 +606,7 @@ namespace FileToYoutube
             Array.Sort(files, (a, b) => int.Parse(a.Split('.')[a.Split('.').Length - 1]) - int.Parse(b.Split('.')[b.Split('.').Length - 1])); // used to sort volumes by extension number
 
             //----- create par2 files
-            string par2Command = $"c -r10 -n5 x *.*";
+            string par2Command = $"c -r5 -n5 x *.*";
 
             Process processX = new Process
             {
