@@ -109,7 +109,7 @@ Attention: "Youtube Short" videos that are directly downloaded form YouTube manu
 
 - [Ffmpeg](https://github.com/FFmpeg/FFmpeg) (used to create a video out of images and the reverse)
 
-- [par2cmdline-turbo] (https://github.com/animetosho/par2cmdline-turbo) (used to create parity data)
+- [par2cmdline-turbo](https://github.com/animetosho/par2cmdline-turbo) (used to create parity data)
 
   
 
