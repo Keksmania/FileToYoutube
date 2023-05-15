@@ -109,21 +109,23 @@ namespace FileToYoutube
             if(sb1.Length > 0) {
 
                 int buffer = 3;
-                if(threadIndex > 999+6) // +6 for the par2 files 
+                if(threadIndex > 999+ decodeParchiveNumber + 1) //  
                 {
                     buffer = threadIndex.ToString().Length;
                 }
 
                 if(threadIndex == 0)
                 {
-                    File.WriteAllText(Path.Combine(workPath, "x.par2"), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
 
-                } else if(threadIndex < 6)
+                   File.WriteAllText(Path.Combine(workPath, "x.par2"), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
+                    
+                   
+                } else if(threadIndex < decodeParchiveNumber+1)
                 {
                     File.WriteAllText(Path.Combine(workPath, $"x.vol{getName(threadIndex,3)}.par2"), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
                 } else
                 {
-                    File.WriteAllText(Path.Combine(workPath, "myZip.7z." + getName(threadIndex-1, buffer)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
+                    File.WriteAllText(Path.Combine(workPath, "myZip.7z." + getName(threadIndex-1-5, buffer)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1")); 
                 }
 
               
@@ -141,6 +143,9 @@ namespace FileToYoutube
             }
             return result;
         }
+
+        const int jumpBytes = 2953;
+
 
         static void TurnFileToImages(Byte[] binaryFile, int imageWidth, int imageHeight, int threadIndex, string bilderPath)
         {
@@ -166,7 +171,7 @@ namespace FileToYoutube
 
             int counter = 0;
             int realNameIndex = 0;
-            int jumpWidth = 2953;
+            int jumpWidth = jumpBytes;
             int x = 0;
             int y = 0;
 
@@ -556,6 +561,10 @@ namespace FileToYoutube
 
             var file = File.OpenRead(filePath);
             var fileSize = file.Length;
+
+           
+
+
             file.Close();
 
             volumeSize = (int)(fileSize / (100*Environment.ProcessorCount) / 1024);
@@ -570,6 +579,8 @@ namespace FileToYoutube
              {
                 volumeSize = 2850; 
             }
+
+
 
             // The name of the 7-Zip executable
 
@@ -603,10 +614,28 @@ namespace FileToYoutube
             Console.WriteLine("File split complete.");
 
             string[] files = Directory.GetFiles(newFolderPath);
+
+
             Array.Sort(files, (a, b) => int.Parse(a.Split('.')[a.Split('.').Length - 1]) - int.Parse(b.Split('.')[b.Split('.').Length - 1])); // used to sort volumes by extension number
 
+
+
+
+            var tempInt = (int)(files.Length * 0.05);
+            if(tempInt < 1)
+            {
+                tempInt = 1;
+            }
+
+            var myParSize = $"-s{volumeSize * 104}";
+            if (files.Length < 2)
+            {
+                myParSize = "";
+
+            }
+
             //----- create par2 files
-            string par2Command = $"c -r5 -n5 x *.*";
+            string par2Command = $"c -r5 {myParSize} x *.7z.*";
 
             Process processX = new Process
             {
@@ -633,15 +662,57 @@ namespace FileToYoutube
             string[] vol = Directory.GetFiles(newFolderPath,"x.vol*");
 
 
+            int parchiveParts = vol.Length;
+
+            Bitmap parchiveBmp = new Bitmap(imageWidth, imageHeight);
+
+            using (Graphics gg = Graphics.FromImage(parchiveBmp))
+            {
+                gg.Clear(Color.Black);
+
+            }
+
+            string binary = Convert.ToString(parchiveParts, 2);
+            binary = binary.PadLeft(imageWidth, '0');
+            for (int i = 0; i < imageWidth; i++)
+            {
+                for (int ii = 0; ii < imageWidth; ii++)
+                {
+                    if (binary[i] == '0')
+                    {
+                        parchiveBmp.SetPixel(i, ii, Color.Black);
+                    }
+                    else
+                    {
+                        parchiveBmp.SetPixel(i, ii, Color.White);
+                    }
+
+                }
+
+            }
+
+
+
+            Bitmap SuperHugeOne = new Bitmap(imageWidth * 10, imageHeight * 10);
+            using (Graphics gg = Graphics.FromImage(SuperHugeOne))
+            {
+                gg.Clear(Color.Black);
+                gg.DrawImage(parchiveBmp, 0, 0);
+
+            }
+            SuperHugeOne.Save(Path.Combine(bilderPath, "abc.bmp"));
+            parchiveBmp.Dispose();
+            SuperHugeOne.Dispose();
+
+
             // infoLabel.Text = "turning volumes into images...";
 
             ThreadPool.SetMaxThreads(Environment.ProcessorCount+3, 1);
-            int taskCount = files.Length + 6;
+            int taskCount = files.Length + parchiveParts+1;
             CountdownEvent countdown = new CountdownEvent(taskCount);
 
             float stepSize = 50 / (files.Length+6) + 20;
 
-            int lastI = 0;
             List<Thread> threads = new List<Thread>();
             for (int i = 0; i < taskCount; i++)
             {
@@ -654,15 +725,19 @@ namespace FileToYoutube
 
                     if (index == 0)
                     {
-                       TurnFileToImages(File.ReadAllBytes(Path.Combine(newFolderPath, "x.par2")), imageWidth, imageHeight, index, bilderPath);
+                        if (File.Exists(Path.Combine(newFolderPath, "x.par2")))
+                        {
+                            TurnFileToImages(File.ReadAllBytes(Path.Combine(newFolderPath, "x.par2")), imageWidth, imageHeight, index, bilderPath);
+                        }
+                      
                     }
-                    else if (index < 6)
+                    else if (index < parchiveParts+1)
                     {
                        TurnFileToImages(File.ReadAllBytes(vol[index - 1]), imageWidth, imageHeight, index, bilderPath);
                     }
                     else
                     {
-                      TurnFileToImages(File.ReadAllBytes(files[index - 6]), imageWidth, imageHeight, index, bilderPath);
+                      TurnFileToImages(File.ReadAllBytes(files[index - (parchiveParts+1)]), imageWidth, imageHeight, index, bilderPath);
                     }
 
                     // Signal that the task is done
@@ -679,7 +754,7 @@ namespace FileToYoutube
 
             StringBuilder myStringBuilder = new StringBuilder();
 
-
+            myStringBuilder.Append("file '" +"abc.bmp" + "'\n");
             int totalFrameCount = 0;
 
             for (int i = 0; i < myNames.Count; i++)
@@ -752,6 +827,8 @@ namespace FileToYoutube
             clearAllFields();
 
         }
+
+        static int decodeParchiveNumber = 1;
 
         private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -860,7 +937,7 @@ namespace FileToYoutube
             {
                 return;
             }
-            backgroundWorker2.ReportProgress(70);
+            backgroundWorker2.ReportProgress(55);
 
 
             imageFiles = Directory.GetFiles(bilderPathDecode, "*.png", SearchOption.TopDirectoryOnly);
@@ -873,10 +950,16 @@ namespace FileToYoutube
                 threadsToRun = imageFiles.Length;
             }
 
-            //  int lastIndex = 0;
+
+            //------------------------
+
+            //------------------------
+
+
+             int lastIndex = 0;
             List<Task> tasks = new List<Task>();
             int xd = 0;
-            bool weiter = true;
+           bool weiter = true;
             for (int i = 0; i < imageFiles.Length && weiter; i = i + imageChunks + 1, xd++)
             {
                 int temp = i + imageChunks;
@@ -884,13 +967,13 @@ namespace FileToYoutube
                 int temp3 = xd;
                 if (temp > imageFiles.Length - 1)
                 {
-                    temp = imageFiles.Length - 1;
+                   temp = imageFiles.Length - 1;
                     weiter = false;
                 }
-                //    int temp = lastIndex + imageChunks;
-                int index = i;
-                var t = Task<int>.Run(() => findWhite(temp2, temp, temp3));
-                tasks.Add(t);
+                //   int temp = lastIndex + imageChunks;
+               int index = i;
+               var t = Task<int>.Run(() => findWhite(temp2, temp, temp3));
+               tasks.Add(t);
 
                 if(index % (Environment.ProcessorCount+1) == 0)
                 {
@@ -905,7 +988,7 @@ namespace FileToYoutube
                 t.Wait();
             }
 
-            backgroundWorker2.ReportProgress(80);
+            backgroundWorker2.ReportProgress(60);
             // now we can create a chunk list -> startPos 
 
 
@@ -949,19 +1032,76 @@ namespace FileToYoutube
 
             fileMapping.Clear();
 
+            Bitmap firstImage = new Bitmap(Path.Combine(bilderPathDecode, "filename0000000001.png"));
+            StringBuilder testString = new StringBuilder();
+            for(int i = 0; i < 177; i++)
+            {
+                int temp = 0;
+                for (int ii = 0; ii < 177; ii++)
+                {
+                    temp += firstImage.GetPixel(i, ii).ToArgb();
+                }
 
-            List<Task> waitTasks = new List<Task>();
+                temp = (int)(temp / 177);
+
+                if(temp > 128)
+                {
+                    testString.Append('0');
+                } else
+                {
+                    testString.Append('1');
+                }
+               
+            }
+
+            var xyz = testString.ToString(testString.Length - 32, 32);
+
+            decodeParchiveNumber = Convert.ToInt32(xyz,2);
+            firstImage.Dispose();
+
+
+            //
+
+            ThreadPool.SetMaxThreads(Environment.ProcessorCount + 3, 1);
+            CountdownEvent countdown2 = new CountdownEvent(filesToRecover.Count);
+
             for (int i = 0; i < filesToRecover.Count; i++)
             {
+
                 int index = i;
-                var t = Task<int>.Run(() => TurnVideoToFile(index, newFolderPathDecode));
-                waitTasks.Add(t);
+
+
+                ThreadPool.QueueUserWorkItem(state =>
+                {
+                    // Do some work here
+                    TurnVideoToFile(index, newFolderPathDecode);
+
+                    // Signal that the task is done
+                    SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED);
+                    countdown2.Signal();
+                });
+
+
+
 
             }
-            foreach (Task t in waitTasks)
-            {
-                t.Wait();
-            }
+
+            countdown2.Wait();
+
+            //
+
+       //     List<Task> waitTasks = new List<Task>();
+       //     for (int i = 0; i < filesToRecover.Count; i++)
+        //    {
+         //       int index = i;
+          //      var t = Task<int>.Run(() => TurnVideoToFile(index, newFolderPathDecode));
+           //     waitTasks.Add(t);
+
+          //  }
+          //  foreach (Task t in waitTasks)
+          //  {
+          //      t.Wait();
+          //  }
 
             backgroundWorker2.ReportProgress(85);
 
