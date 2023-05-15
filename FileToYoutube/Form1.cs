@@ -322,7 +322,6 @@ namespace FileToYoutube
         const int imageWidth = 177;
         const int imageHeight = 177;
 
-        const int bitWidth = 1;
         string filePath = "", newFolderPath = "", bilderPath = "", filePathDecode = "", newFolderPathDecode = "", bilderPathDecode = "";
         //  const string ffmpegPath = @"C:\Users\Alper\Desktop\ffmpeg-5.1.2-full_build\bin\ffmpeg.exe"; // das muss mit im Programm included sein
         const string ffmpegPath = @"ffmpeg.exe"; // das muss mit im Programm included sein
@@ -405,10 +404,12 @@ namespace FileToYoutube
            
             if (checkBox1.Checked)
             {
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                openFileDialog.Filter = "Youtube Files *.mp4|*.mp4|*.webm|*.webm";
-                openFileDialog.FilterIndex = 1;
-                openFileDialog.RestoreDirectory = true;
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    Filter = "Youtube Files *.mp4|*.mp4|*.webm|*.webm",
+                    FilterIndex = 1,
+                    RestoreDirectory = true
+                };
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -427,8 +428,7 @@ namespace FileToYoutube
                     youtubeText.Text = "https://" + youtubeText.Text.Trim();
                 }
                 var uriName = youtubeText.Text;
-                Uri uriResult;
-                bool result = Uri.TryCreate(uriName, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+                bool result = Uri.TryCreate(uriName, UriKind.Absolute, out Uri uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
 
                 if (!youtubeList.Items.Contains(uriName) && result)
                 {
@@ -456,17 +456,17 @@ namespace FileToYoutube
         {
             Bitmap b;
 
-            bool isWhite = true;
+            bool isWhite;
             List<int[]> mappings = new List<int[]>();
 
-            int h = 0;
+            int h;
 
             for (int x = startImage; x <= endImage; x++)
             {
 
                 b = new Bitmap(imageFiles[x]);
                 h = 0;
-                for (int i = (b.Height / 10) / 2; i < b.Height; i = i + b.Height / 10) // go to middle of images
+                for (int i = (b.Height / 10) / 2; i < b.Height; i += b.Height / 10) // go to middle of images
                 {
 
                     for (int ii = 0; ii < 10; ii++)  // scan each of the 10 images
@@ -1259,10 +1259,12 @@ namespace FileToYoutube
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "All files (*.*)|*.*";
-            openFileDialog.FilterIndex = 1;
-            openFileDialog.RestoreDirectory = true;
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "All files (*.*)|*.*",
+                FilterIndex = 1,
+                RestoreDirectory = true
+            };
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
@@ -1274,10 +1276,12 @@ namespace FileToYoutube
 
         private void Select1_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "All files (*.*)|*.*";
-            openFileDialog.FilterIndex = 1;
-            openFileDialog.RestoreDirectory = true;
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "All files (*.*)|*.*",
+                FilterIndex = 1,
+                RestoreDirectory = true
+            };
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
