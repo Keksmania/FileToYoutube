@@ -635,7 +635,7 @@ namespace FileToYoutube
             }
 
             //----- create par2 files
-            string par2Command = $"c -r5 {myParSize} x *.7z.*";
+            string par2Command = $"c -u -r5 {myParSize} x *.7z.*";
 
             Process processX = new Process
             {
