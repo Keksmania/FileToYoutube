@@ -18,17 +18,17 @@ WARNING: This app must not be used to distribute illegal files or shouldn’t be
 
 ## Some facts:
 
-- The ratio to file to encoded video is between 1:15 and 1:19
+- The ratio to file to encoded video is 1:15
 
-- The ratio to zipped file to downloaded video is 1:14
+- The ratio to zipped file to downloaded video is 1:15
 
-- The total size you will need on your hard drive for encoding is about 23.5x the size of your file (19x for the video, 3.5x for generated images, and 1x for the archive volumes)
+- The total size you will need on your hard drive for encoding is about 19.75x the size of your file (15x for the video, 3.7x for generated images, and 1.05x for the archive volumes)
 
-- The total size you will need on your hard drive for decoding is about 19x the size of your file (14x for the video, 4x for the generated images, and 1x for the archive volumes)
+- The total size you will need on your hard drive for decoding is about 20.25x the size of your file (15x for the video, 4.2x for the generated images, and 1.05x for the archive volumes)
   
-- You will need about 5 hours to encode a 1 gb file on a 10th gen i5 CPU with 6 hardware cores
+- You will need about 1 hour to encode a 1 gb file on a 10th gen i5 CPU with 6 hardware cores
 
-- Decoding is fast and the downloading of the video will depend on your internet speed
+- Decoding is fast and the downloading and uploading of the videos will depend on your internet speed
 
 
 
