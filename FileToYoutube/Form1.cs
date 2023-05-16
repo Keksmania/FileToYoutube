@@ -534,17 +534,31 @@ namespace FileToYoutube
             this.keyButton.Enabled = !this.keyButton.Enabled;
             this.copyButton.Enabled = !this.copyButton.Enabled;
             this.checkBox1.Enabled = !this.checkBox1.Enabled;
+            this.trackBar1.Enabled = !this.trackBar1.Enabled;
 
         }
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
+
+
+
             if ( !Directory.Exists(newFolderPath) || !Directory.Exists(bilderPath) || !File.Exists(filePath))
             {
                 MessageBox.Show("Please select all requied folders and files!", "Error", 0, MessageBoxIcon.Error);
                 return;
             }
 
+
+            long lengthX = new System.IO.FileInfo(filePath).Length;
+            long TestValue = (((long)maxVolumeSize) * ((long)32768)*1024);
+            if (lengthX > TestValue)
+            {
+
+                 MessageBox.Show("File is bigger than settings allow! Please adjust the volume size parameter! It should be as small as possible to be ram efficient", "Error", 0, MessageBoxIcon.Error);
+                return;
+            }
+          
             SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED);
             myNames.Clear();
           
@@ -575,9 +589,9 @@ namespace FileToYoutube
              {
                 volumeSize = 285;
             }
-            else if (volumeSize > 2850)
+            else if (volumeSize > maxVolumeSize)
              {
-                volumeSize = 2850; 
+                volumeSize = maxVolumeSize; 
             }
 
 
@@ -627,7 +641,8 @@ namespace FileToYoutube
                 tempInt = 1;
             }
 
-            var myParSize = $"-s{volumeSize * 104}";
+            var myParSize = $"-n{tempInt}";
+            if (files.Length < 2)
             if (files.Length < 2)
             {
                 myParSize = "";
@@ -1242,6 +1257,31 @@ namespace FileToYoutube
             if(PasswordEncode.Text.Length > 0) { 
             System.Windows.Forms.Clipboard.SetText(PasswordEncode.Text);
             }
+        }
+
+
+        int maxVolumeSize = 2850;
+
+
+
+
+
+        private void updateMaxSizeLabel()
+        {
+           
+            this.MaxSize.Text = (((ulong)this.trackBar1.Value * (ulong)32768) / (1024*1024)).ToString() + " GB"; // 32768 is the max for par2 files
+            maxVolumeSize = this.trackBar1.Value;
+            this.maxVolumeLabel.Text = this.trackBar1.Value.ToString() + " Bytes";
+        }
+
+        private void trackBar1_ValueChanged(object sender, EventArgs e)
+        {
+            updateMaxSizeLabel();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            updateMaxSizeLabel();
         }
 
         private void button4_Click(object sender, EventArgs e)
