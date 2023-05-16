@@ -125,7 +125,7 @@ namespace FileToYoutube
                     File.WriteAllText(Path.Combine(workPath, $"x.vol{getName(threadIndex,3)}.par2"), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
                 } else
                 {
-                    File.WriteAllText(Path.Combine(workPath, "myZip.7z." + getName(threadIndex-1-5, buffer)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1")); 
+                    File.WriteAllText(Path.Combine(workPath, "myZip.7z." + getName(threadIndex-1- decodeParchiveNumber, buffer)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1")); 
                 }
 
               
@@ -726,7 +726,7 @@ namespace FileToYoutube
             int taskCount = files.Length + parchiveParts+1;
             CountdownEvent countdown = new CountdownEvent(taskCount);
 
-            float stepSize = 50 / (files.Length+6) + 20;
+          //  float stepSize = 50 / (files.Length+6) + 20;
 
             List<Thread> threads = new List<Thread>();
             for (int i = 0; i < taskCount; i++)
@@ -971,7 +971,7 @@ namespace FileToYoutube
             //------------------------
 
 
-             int lastIndex = 0;
+         
             List<Task> tasks = new List<Task>();
             int xd = 0;
            bool weiter = true;
