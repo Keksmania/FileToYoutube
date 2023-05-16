@@ -125,7 +125,7 @@ namespace FileToYoutube
                     File.WriteAllText(Path.Combine(workPath, $"x.vol{getName(threadIndex,3)}.par2"), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1"));
                 } else
                 {
-                    File.WriteAllText(Path.Combine(workPath, "myZip.7z." + getName(threadIndex-1- decodeParchiveNumber, buffer)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1")); 
+                    File.WriteAllText(Path.Combine(workPath, "myZip.7z." + getName(threadIndex-decodeParchiveNumber, buffer)), sb1.ToString(), Encoding.GetEncoding("ISO-8859-1")); 
                 }
 
               
